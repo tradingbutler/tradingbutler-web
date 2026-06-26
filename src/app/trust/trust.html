@@ -1,0 +1,10 @@
+<section class="trust" aria-label="At a glance">
+  <dl class="trust__grid">
+    @for (stat of stats; track stat.label) {
+      <div class="trust__item">
+        <dt class="trust__value">{{ stat.value }}</dt>
+        <dd class="trust__label">{{ stat.label }}</dd>
+      </div>
+    }
+  </dl>
+</section>

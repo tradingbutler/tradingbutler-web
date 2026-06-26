@@ -1,0 +1,67 @@
+<section class="clock" id="sessions" aria-label="Forex market sessions">
+  <header class="clock__head">
+    <span class="tb-eyebrow">Market hours</span>
+    <h2 class="clock__title">Is the market open right now?</h2>
+    <p class="clock__sub">
+      Live forex session status from your own clock — no delay, no guesswork.
+    </p>
+  </header>
+
+  <div class="clock__card">
+    <div class="clock__status">
+      @if (ready()) {
+        <span
+          class="clock__pill"
+          [class.clock__pill--open]="marketOpen()"
+          [class.clock__pill--closed]="!marketOpen()"
+        >
+          <span class="clock__dot" aria-hidden="true"></span>
+          {{ marketOpen() ? 'Market open' : 'Market closed' }}
+        </span>
+        <span class="clock__utc tb-num">{{ utcTime() }} UTC</span>
+      } @else {
+        <span class="clock__pill clock__pill--loading">
+          <span class="clock__dot" aria-hidden="true"></span>
+          Checking sessions…
+        </span>
+      }
+    </div>
+
+    <ul class="clock__grid">
+      @for (s of sessions(); track s.name) {
+        <li class="clock__session" [class.clock__session--open]="s.open">
+          <span class="clock__session-head">
+            <span class="clock__session-name">{{ s.name }}</span>
+            <span class="clock__session-state">{{ s.open ? 'Open' : 'Closed' }}</span>
+          </span>
+          <span class="clock__session-city">{{ s.city }}</span>
+          <span class="clock__session-change tb-num">{{ s.change }}</span>
+        </li>
+      } @empty {
+        @for (n of [0, 1, 2, 3]; track n) {
+          <li class="clock__session clock__session--skeleton" aria-hidden="true"></li>
+        }
+      }
+    </ul>
+
+    @if (ready()) {
+      <div class="clock__exchanges">
+        <ul class="clock__exchanges-list">
+          @for (e of exchanges(); track e.name) {
+            <li
+              class="clock__exch"
+              [class.clock__exch--open]="e.open"
+              [title]="e.name + ' (' + e.region + ') — ' + e.detail"
+              [attr.aria-label]="e.name + ' (' + e.region + ') — ' + e.detail"
+            >
+              <span class="clock__exch-dot" aria-hidden="true"></span>
+              <span class="clock__exch-name">{{ e.name }}</span>
+              <span class="clock__exch-region">{{ e.region }}</span>
+              <span class="clock__exch-tz tb-num">{{ e.tzLabel }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</section>

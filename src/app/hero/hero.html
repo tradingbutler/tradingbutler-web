@@ -1,0 +1,75 @@
+<section class="hero" id="hero">
+  <div class="hero__copy">
+    <h1 class="hero__title">Compare live broker spreads on Forex, Gold &amp; Crypto</h1>
+    <p class="hero__subtitle">
+      TradingButler ranks regulated brokers by their live spread — open an account with the
+      tightest one in a single click.
+    </p>
+
+    <aside class="hero-rank" aria-label="Tightest broker spreads right now">
+      <div class="hero-rank__head">
+        <span class="hero-rank__eyebrow">
+          <span class="hero-rank__live" aria-hidden="true"></span>
+          Tightest spread right now
+        </span>
+        <div class="hero-rank__select-wrap">
+          <select aria-label="Select instrument" (change)="onSymbolChange($event)">
+            @for (symbol of symbols; track symbol.code) {
+              <option [value]="symbol.code" [selected]="symbol.code === marketData.selectedSymbol()">
+                {{ symbol.label }}
+              </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (topBrokers().length === 0) {
+        <p class="hero-rank__empty">Loading live spreads…</p>
+      } @else {
+        <ol class="hero-rank__list">
+          @for (quote of topBrokers(); track quote.broker_id; let i = $index) {
+            <li class="hero-rank__row" [class.hero-rank__row--top]="i === 0">
+              <span class="hero-rank__pos" [class.hero-rank__pos--top]="i === 0">{{ i + 1 }}</span>
+              <span class="hero-rank__broker">
+                <span class="hero-rank__name">
+                  {{ quote.broker_name }}
+                  @if (i === 0) {
+                    <span class="hero-rank__badge">Best</span>
+                  }
+                </span>
+                <span class="hero-rank__meta tb-num">
+                  ★ {{ quote.broker_rating }}
+                  @if (quote.regulator) {
+                    · {{ quote.regulator }}
+                  }
+                </span>
+              </span>
+              <span class="hero-rank__spread tb-num">
+                <span class="hero-rank__spread-num">{{ quote.spread | number: digitsFor(quote.symbol) }}</span>
+                <span class="hero-rank__spread-label">spread</span>
+              </span>
+              <a
+                class="hero-rank__cta"
+                [href]="quote.affiliate_url"
+                target="_blank"
+                rel="noopener sponsored"
+              >
+                Open account
+              </a>
+            </li>
+          }
+        </ol>
+        <a class="hero-rank__more" href="#compare">See all 5 brokers &amp; every instrument →</a>
+      }
+    </aside>
+
+    <div class="hero__regs">
+      <span class="hero__regs-label">Listed brokers regulated by</span>
+      <span class="hero__regs-list">FCA · ASIC · CySEC · FSCA</span>
+    </div>
+  </div>
+
+  <div class="hero__mascot">
+    <app-mascot />
+  </div>
+</section>

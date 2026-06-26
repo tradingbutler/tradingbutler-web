@@ -1,0 +1,69 @@
+<section class="markets" id="markets" aria-label="Live markets overview">
+  <header class="markets__head">
+    <div class="markets__head-text">
+      <span class="tb-eyebrow">Live markets</span>
+      <h2 class="markets__title">The whole board, at a glance</h2>
+      <p class="markets__sub">Live prices and spreads per instrument, grouped by asset class.</p>
+    </div>
+
+    <div class="markets__selector">
+      <label for="markets-broker">Broker</label>
+      <div class="markets__select-wrap">
+        <select id="markets-broker" (change)="onBrokerChange($event)">
+          <option value="best" [selected]="marketData.selectedBroker() === 'best'">Best available</option>
+          @for (broker of brokers; track broker.id) {
+            <option [value]="broker.id" [selected]="broker.id === marketData.selectedBroker()">
+              {{ broker.name }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="markets__grid">
+    @for (group of marketData.marketsByClass(); track group.assetClass) {
+      <div class="markets__card">
+        <h3 class="markets__class">{{ group.assetClass }}</h3>
+        <table class="markets__table tb-num">
+          <thead>
+            <tr>
+              <th scope="col">Broker</th>
+              <th scope="col">Symbol</th>
+              <th scope="col" class="markets__col-num">Price</th>
+              <th scope="col" class="markets__col-num">Change</th>
+              <th scope="col" class="markets__col-num">Spread</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of group.rows; track row.symbol.code) {
+              <tr>
+                @if (row.quote) {
+                  <td class="markets__broker">{{ row.quote.broker_name }}</td>
+                } @else {
+                  <td class="markets__broker markets__muted">—</td>
+                }
+                <td class="markets__symbol">{{ row.symbol.label }}</td>
+                @if (row.quote) {
+                  <td class="markets__col-num">{{ mid(row.quote) | number: digitsFor(row.symbol.code) }}</td>
+                  <td class="markets__col-num"
+                      [class.markets__change--up]="row.quote.change_pct > 0.01"
+                      [class.markets__change--down]="row.quote.change_pct < -0.01"
+                      [class.markets__change--flat]="row.quote.change_pct >= -0.01 && row.quote.change_pct <= 0.01">
+                    {{ row.quote.change_pct > 0.01 ? '▲' : row.quote.change_pct < -0.01 ? '▼' : '▪' }}
+                    {{ row.quote.change_pct >= 0 ? '+' : '' }}{{ row.quote.change_pct | number: '1.2-2' }}%
+                  </td>
+                  <td class="markets__col-num markets__spread">{{ row.quote.spread | number: digitsFor(row.symbol.code) }}</td>
+                } @else {
+                  <td class="markets__col-num markets__muted">—</td>
+                  <td class="markets__col-num markets__muted">—</td>
+                  <td class="markets__col-num markets__muted">—</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>
