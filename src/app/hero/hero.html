@@ -13,16 +13,7 @@
                     Tightest spread right now
                 </span>
                 <div class="hero-rank__select-wrap">
-                    <select aria-label="Select instrument" (change)="onSymbolChange($event)">
-                        @for (symbol of symbols; track symbol.code) {
-                            <option
-                                [value]="symbol.code"
-                                [selected]="symbol.code === marketData.selectedSymbol()"
-                            >
-                                {{ symbol.label }}
-                            </option>
-                        }
-                    </select>
+                    <app-symbol-select />
                 </div>
             </div>
 
