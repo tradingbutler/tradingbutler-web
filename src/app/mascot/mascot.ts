@@ -13,7 +13,7 @@ interface MascotState {
 })
 export class Mascot {
   protected readonly state = signal<MascotState>({
-    image: 'mascot/butler-hero.png',
+    image: 'mascot/butler-hero-ext.png',
     tip: 'Good evening. I have gathered the latest spreads for you.',
   });
 }
