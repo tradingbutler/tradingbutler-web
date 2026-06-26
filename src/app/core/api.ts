@@ -4,12 +4,12 @@ import { Observable } from 'rxjs';
 import { PriceQuote } from './price-quote';
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
 export class Api {
-  constructor(private readonly http: HttpClient) {}
+    constructor(private readonly http: HttpClient) {}
 
-  getPrices(): Observable<PriceQuote[]> {
-    return this.http.get<PriceQuote[]>('/api/prices');
-  }
+    getPrices(): Observable<PriceQuote[]> {
+        return this.http.get<PriceQuote[]>('/api/prices');
+    }
 }

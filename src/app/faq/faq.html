@@ -1,18 +1,18 @@
 <section class="faq" id="faq" aria-label="Frequently asked questions">
-  <header class="faq__head">
-    <span class="tb-eyebrow">FAQ</span>
-    <h2 class="faq__title">Everything you need to know</h2>
-  </header>
+    <header class="faq__head">
+        <span class="tb-eyebrow">FAQ</span>
+        <h2 class="faq__title">Everything you need to know</h2>
+    </header>
 
-  <div class="faq__list">
-    @for (item of faqs; track item.q) {
-      <details class="faq__item">
-        <summary class="faq__q">
-          <span>{{ item.q }}</span>
-          <span class="faq__icon" aria-hidden="true"></span>
-        </summary>
-        <p class="faq__a">{{ item.a }}</p>
-      </details>
-    }
-  </div>
+    <div class="faq__list">
+        @for (item of faqs; track item.q) {
+            <details class="faq__item">
+                <summary class="faq__q">
+                    <span>{{ item.q }}</span>
+                    <span class="faq__icon" aria-hidden="true"></span>
+                </summary>
+                <p class="faq__a">{{ item.a }}</p>
+            </details>
+        }
+    </div>
 </section>

@@ -1,92 +1,95 @@
 <div class="risk-bar" role="note">
-  <span class="risk-bar__inner">
-    <strong>Risk warning:</strong> CFDs are complex instruments and come with a high risk of
-    losing money rapidly due to leverage. Spreads shown are illustrative.
-  </span>
+    <span class="risk-bar__inner">
+        <strong>Risk warning:</strong> CFDs are complex instruments and come with a high risk of
+        losing money rapidly due to leverage. Spreads shown are illustrative.
+    </span>
 </div>
 
 <app-header />
 <app-ticker />
 
 <main class="page">
-  <app-hero />
-  <app-broker-ranking />
-  <app-trust />
-  <app-features />
-  <app-markets />
-  <app-market-clock />
-  <div class="sentiment-row">
-    <app-fear-greed />
-    <app-fear-greed
-      variant="stocks"
-      title="Stocks Fear &amp; Greed"
-      sub="A live 0–100 read on US stock-market sentiment — built from volatility, momentum, options demand and safe-haven flows. Fear can flag value; greed can flag froth."
-    />
-  </div>
-  <app-faq />
-
-  <section class="final-cta" aria-label="Get started">
-    <div class="final-cta__inner">
-      <h2 class="final-cta__title">Open your account with the tightest spread</h2>
-      <p class="final-cta__sub">
-        Compare {{ '' }}live spreads in seconds and start trading with a top-rated, regulated broker.
-      </p>
-      <a class="final-cta__btn" href="#compare">Compare brokers &amp; open account</a>
+    <app-hero />
+    <app-broker-ranking />
+    <app-trust />
+    <app-features />
+    <app-markets />
+    <app-market-clock />
+    <div class="sentiment-row">
+        <app-fear-greed />
+        <app-fear-greed
+            variant="stocks"
+            title="Stocks Fear &amp; Greed"
+            sub="A live 0–100 read on US stock-market sentiment — built from volatility, momentum, options demand and safe-haven flows. Fear can flag value; greed can flag froth."
+        />
     </div>
-  </section>
+    <app-faq />
+
+    <section class="final-cta" aria-label="Get started">
+        <div class="final-cta__inner">
+            <h2 class="final-cta__title">Open your account with the tightest spread</h2>
+            <p class="final-cta__sub">
+                Compare {{ '' }}live spreads in seconds and start trading with a top-rated,
+                regulated broker.
+            </p>
+            <a class="final-cta__btn" href="#compare">Compare brokers &amp; open account</a>
+        </div>
+    </section>
 </main>
 
 <footer class="page-footer" id="about">
-  <div class="page-footer__inner">
-    <div class="page-footer__top">
-      <div class="page-footer__col page-footer__col--brand">
-        <span class="page-footer__brand">
-          <img src="icon-192.png" alt="" width="28" height="28" />
-          TradingButler
-        </span>
-        <p class="page-footer__about">
-          Your personal assistant for broker comparison and trading insights.
-          We serve data. You make better trades.
+    <div class="page-footer__inner">
+        <div class="page-footer__top">
+            <div class="page-footer__col page-footer__col--brand">
+                <span class="page-footer__brand">
+                    <img src="icon-192.png" alt="" width="28" height="28" />
+                    TradingButler
+                </span>
+                <p class="page-footer__about">
+                    Your personal assistant for broker comparison and trading insights. We serve
+                    data. You make better trades.
+                </p>
+                @if (contactEmail(); as email) {
+                    <p class="page-footer__contact">
+                        Questions? Reach us at
+                        <a class="page-footer__contact-link" [href]="'mailto:' + email">{{
+                            email
+                        }}</a>
+                    </p>
+                }
+            </div>
+
+            <nav class="page-footer__col" aria-label="Product">
+                <h3>Product</h3>
+                <a href="#compare">Broker comparison</a>
+                <a href="#markets">Live markets</a>
+                <a href="#features">Why TradingButler</a>
+                <a href="#faq">FAQ</a>
+            </nav>
+
+            <nav class="page-footer__col" aria-label="Company">
+                <h3>Company</h3>
+                <a href="#about">About</a>
+                <a href="#about" (click)="mailtoSupport($event)">Contact</a>
+                <a href="#about">Partners</a>
+            </nav>
+
+            <nav class="page-footer__col" aria-label="Legal">
+                <h3>Legal</h3>
+                <a href="#about">Risk disclosure</a>
+                <a href="#about">Terms of use</a>
+                <a href="#about">Privacy policy</a>
+            </nav>
+        </div>
+
+        <p class="page-footer__disclaimer">
+            Trading CFDs and forex involves a high level of risk and may not be suitable for all
+            investors. The high degree of leverage can work against you as well as for you. Prices,
+            spreads, ratings and brokers shown on this site are illustrative and provided for
+            comparison purposes only; verify all figures and regulatory status directly with each
+            broker before opening an account. TradingButler may receive compensation from brokers
+            listed on this site.
         </p>
-        @if (contactEmail(); as email) {
-          <p class="page-footer__contact">
-            Questions? Reach us at
-            <a class="page-footer__contact-link" [href]="'mailto:' + email">{{ email }}</a>
-          </p>
-        }
-      </div>
-
-      <nav class="page-footer__col" aria-label="Product">
-        <h3>Product</h3>
-        <a href="#compare">Broker comparison</a>
-        <a href="#markets">Live markets</a>
-        <a href="#features">Why TradingButler</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-
-      <nav class="page-footer__col" aria-label="Company">
-        <h3>Company</h3>
-        <a href="#about">About</a>
-        <a href="#about" (click)="mailtoSupport($event)">Contact</a>
-        <a href="#about">Partners</a>
-      </nav>
-
-      <nav class="page-footer__col" aria-label="Legal">
-        <h3>Legal</h3>
-        <a href="#about">Risk disclosure</a>
-        <a href="#about">Terms of use</a>
-        <a href="#about">Privacy policy</a>
-      </nav>
+        <p class="page-footer__copyright">&copy; 2026 TradingButler. All rights reserved.</p>
     </div>
-
-    <p class="page-footer__disclaimer">
-      Trading CFDs and forex involves a high level of risk and may not be suitable for all
-      investors. The high degree of leverage can work against you as well as for you. Prices,
-      spreads, ratings and brokers shown on this site are illustrative and provided for
-      comparison purposes only; verify all figures and regulatory status directly with each
-      broker before opening an account. TradingButler may receive compensation from brokers
-      listed on this site.
-    </p>
-    <p class="page-footer__copyright">&copy; 2026 TradingButler. All rights reserved.</p>
-  </div>
 </footer>

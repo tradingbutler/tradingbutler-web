@@ -1,79 +1,103 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>TradingButler — Compare Live Broker Spreads | Forex, Gold &amp; Crypto</title>
-  <meta name="description" content="Compare live forex, gold and crypto spreads across regulated brokers in real time. See the tightest spread for EUR/USD, XAU/USD, BTC/USD and more, then open an account in one click.">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://tradingbuttler.com/">
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0a0d13">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
-</head>
-<body>
-  <app-root></app-root>
+    <head>
+        <meta charset="utf-8" />
+        <title>TradingButler — Compare Live Broker Spreads | Forex, Gold &amp; Crypto</title>
+        <meta
+            name="description"
+            content="Compare live forex, gold and crypto spreads across regulated brokers in real time. See the tightest spread for EUR/USD, XAU/USD, BTC/USD and more, then open an account in one click."
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://tradingbuttler.com/" />
+        <base href="/" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#0a0d13" />
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <app-root></app-root>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": "https://tradingbuttler.com/#org",
-        "name": "TradingButler",
-        "url": "https://tradingbuttler.com/",
-        "logo": "https://tradingbuttler.com/icon-192.png",
-        "description": "Live broker spread comparison for forex, gold, crypto, energy and indices."
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://tradingbuttler.com/#website",
-        "url": "https://tradingbuttler.com/",
-        "name": "TradingButler",
-        "publisher": { "@id": "https://tradingbuttler.com/#org" }
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is a spread in forex and CFD trading?",
-            "acceptedAnswer": { "@type": "Answer", "text": "The spread is the difference between the bid (sell) and ask (buy) price of an instrument. It is the main cost of opening a trade, so a tighter spread means you pay less every time you trade." }
-          },
-          {
-            "@type": "Question",
-            "name": "Which broker has the lowest spreads?",
-            "acceptedAnswer": { "@type": "Answer", "text": "It changes constantly. TradingButler ranks brokers by their live spread for each instrument and highlights the tightest one, so the best-spread broker you see is always based on current prices." }
-          },
-          {
-            "@type": "Question",
-            "name": "How does TradingButler get its spread data?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Prices stream directly from each broker through trusted data sources, are aggregated in real time, and shown side by side so you can compare like-for-like." }
-          },
-          {
-            "@type": "Question",
-            "name": "Are the brokers listed regulated?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Every broker we list is checked for regulation by a recognised authority such as the FCA, ASIC, CySEC or FSCA before it appears in the comparison." }
-          },
-          {
-            "@type": "Question",
-            "name": "Is TradingButler free to use?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Comparing spreads and opening an account through TradingButler is completely free. We may receive a commission from brokers when you open an account, which never affects the spreads you see." }
-          },
-          {
-            "@type": "Question",
-            "name": "How often do the spreads update?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Spreads update continuously, typically in under a second, so the comparison reflects current market conditions rather than stale averages." }
-          }
-        ]
-      }
-    ]
-  }
-  </script>
-</body>
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@graph": [
+                    {
+                        "@type": "Organization",
+                        "@id": "https://tradingbuttler.com/#org",
+                        "name": "TradingButler",
+                        "url": "https://tradingbuttler.com/",
+                        "logo": "https://tradingbuttler.com/icon-192.png",
+                        "description": "Live broker spread comparison for forex, gold, crypto, energy and indices."
+                    },
+                    {
+                        "@type": "WebSite",
+                        "@id": "https://tradingbuttler.com/#website",
+                        "url": "https://tradingbuttler.com/",
+                        "name": "TradingButler",
+                        "publisher": { "@id": "https://tradingbuttler.com/#org" }
+                    },
+                    {
+                        "@type": "FAQPage",
+                        "mainEntity": [
+                            {
+                                "@type": "Question",
+                                "name": "What is a spread in forex and CFD trading?",
+                                "acceptedAnswer": {
+                                    "@type": "Answer",
+                                    "text": "The spread is the difference between the bid (sell) and ask (buy) price of an instrument. It is the main cost of opening a trade, so a tighter spread means you pay less every time you trade."
+                                }
+                            },
+                            {
+                                "@type": "Question",
+                                "name": "Which broker has the lowest spreads?",
+                                "acceptedAnswer": {
+                                    "@type": "Answer",
+                                    "text": "It changes constantly. TradingButler ranks brokers by their live spread for each instrument and highlights the tightest one, so the best-spread broker you see is always based on current prices."
+                                }
+                            },
+                            {
+                                "@type": "Question",
+                                "name": "How does TradingButler get its spread data?",
+                                "acceptedAnswer": {
+                                    "@type": "Answer",
+                                    "text": "Prices stream directly from each broker through trusted data sources, are aggregated in real time, and shown side by side so you can compare like-for-like."
+                                }
+                            },
+                            {
+                                "@type": "Question",
+                                "name": "Are the brokers listed regulated?",
+                                "acceptedAnswer": {
+                                    "@type": "Answer",
+                                    "text": "Every broker we list is checked for regulation by a recognised authority such as the FCA, ASIC, CySEC or FSCA before it appears in the comparison."
+                                }
+                            },
+                            {
+                                "@type": "Question",
+                                "name": "Is TradingButler free to use?",
+                                "acceptedAnswer": {
+                                    "@type": "Answer",
+                                    "text": "Yes. Comparing spreads and opening an account through TradingButler is completely free. We may receive a commission from brokers when you open an account, which never affects the spreads you see."
+                                }
+                            },
+                            {
+                                "@type": "Question",
+                                "name": "How often do the spreads update?",
+                                "acceptedAnswer": {
+                                    "@type": "Answer",
+                                    "text": "Spreads update continuously, typically in under a second, so the comparison reflects current market conditions rather than stale averages."
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        </script>
+    </body>
 </html>

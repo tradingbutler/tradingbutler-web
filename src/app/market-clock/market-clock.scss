@@ -1,225 +1,227 @@
 .clock {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .clock__head {
-  text-align: center;
+    text-align: center;
 }
 
 .clock__title {
-  margin: 0.5rem 0 0;
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 800;
+    margin: 0.5rem 0 0;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
 }
 
 .clock__sub {
-  margin: 0.6rem auto 0;
-  max-width: 52ch;
-  color: var(--tb-text-muted);
+    margin: 0.6rem auto 0;
+    max-width: 52ch;
+    color: var(--tb-text-muted);
 }
 
 .clock__card {
-  border: 1px solid var(--tb-border);
-  border-radius: var(--tb-radius);
-  background: var(--tb-surface);
-  box-shadow: var(--tb-shadow);
-  padding: 1.5rem;
+    border: 1px solid var(--tb-border);
+    border-radius: var(--tb-radius);
+    background: var(--tb-surface);
+    box-shadow: var(--tb-shadow);
+    padding: 1.5rem;
 }
 
 .clock__status {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
 }
 
 .clock__pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.85rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  border: 1px solid var(--tb-border-strong);
-  color: var(--tb-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 1px solid var(--tb-border-strong);
+    color: var(--tb-text-muted);
 }
 
 .clock__pill--open {
-  color: var(--tb-green);
-  background: var(--tb-green-soft);
-  border-color: transparent;
+    color: var(--tb-green);
+    background: var(--tb-green-soft);
+    border-color: transparent;
 }
 
 .clock__pill--closed,
 .clock__pill--loading {
-  color: var(--tb-text-faint);
+    color: var(--tb-text-faint);
 }
 
 .clock__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
 }
 
 .clock__pill--open .clock__dot {
-  box-shadow: 0 0 0 4px var(--tb-green-soft);
+    box-shadow: 0 0 0 4px var(--tb-green-soft);
 }
 
 .clock__utc {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--tb-text-muted);
-  letter-spacing: 0.02em;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--tb-text-muted);
+    letter-spacing: 0.02em;
 }
 
 .clock__grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
 }
 
 .clock__session {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding: 0.9rem 1rem;
-  border-radius: var(--tb-radius-sm);
-  background: var(--tb-surface-2);
-  border: 1px solid var(--tb-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.9rem 1rem;
+    border-radius: var(--tb-radius-sm);
+    background: var(--tb-surface-2);
+    border: 1px solid var(--tb-border);
 }
 
 .clock__session--open {
-  border-color: rgba(43, 182, 115, 0.4);
-  background: linear-gradient(180deg, var(--tb-green-soft), var(--tb-surface-2));
+    border-color: rgba(43, 182, 115, 0.4);
+    background: linear-gradient(180deg, var(--tb-green-soft), var(--tb-surface-2));
 }
 
 .clock__session--skeleton {
-  min-height: 84px;
-  background: var(--tb-surface-2);
+    min-height: 84px;
+    background: var(--tb-surface-2);
 }
 
 .clock__session-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
 }
 
 .clock__session-name {
-  font-weight: 700;
-  font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 0.95rem;
 }
 
 .clock__session-state {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--tb-text-faint);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tb-text-faint);
 }
 
 .clock__session--open .clock__session-state {
-  color: var(--tb-green);
+    color: var(--tb-green);
 }
 
 .clock__session-city {
-  font-size: 0.78rem;
-  color: var(--tb-text-faint);
+    font-size: 0.78rem;
+    color: var(--tb-text-faint);
 }
 
 .clock__session-change {
-  margin-top: 0.15rem;
-  font-size: 0.85rem;
-  color: var(--tb-text-muted);
+    margin-top: 0.15rem;
+    font-size: 0.85rem;
+    color: var(--tb-text-muted);
 }
 
 .clock__exchanges {
-  margin-top: 1.25rem;
-  padding-top: 1.1rem;
-  border-top: 1px solid var(--tb-border);
+    margin-top: 1.25rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--tb-border);
 }
 
 .clock__exchanges-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .clock__exch {
-  flex: 1 1 140px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding: 0.45rem 0.75rem;
-  border-radius: var(--tb-radius-sm);
-  background: var(--tb-surface-2);
-  border: 1px solid var(--tb-border);
-  font-size: 0.78rem;
-  line-height: 1;
-  transition: border-color 0.15s ease, background 0.15s ease;
+    flex: 1 1 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: var(--tb-radius-sm);
+    background: var(--tb-surface-2);
+    border: 1px solid var(--tb-border);
+    font-size: 0.78rem;
+    line-height: 1;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
 }
 
 .clock__exch--open {
-  border-color: rgba(43, 182, 115, 0.38);
-  background: var(--tb-green-soft);
+    border-color: rgba(43, 182, 115, 0.38);
+    background: var(--tb-green-soft);
 }
 
 .clock__exch-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--tb-text-faint);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--tb-text-faint);
 }
 
 .clock__exch--open .clock__exch-dot {
-  background: var(--tb-green);
+    background: var(--tb-green);
 }
 
 .clock__exch-name {
-  font-weight: 600;
-  color: var(--tb-text);
+    font-weight: 600;
+    color: var(--tb-text);
 }
 
 .clock__exch-region {
-  color: var(--tb-text-faint);
+    color: var(--tb-text-faint);
 }
 
 .clock__exch-region::before {
-  content: '·';
-  margin-right: 0.4rem;
-  color: var(--tb-border-strong);
+    content: '·';
+    margin-right: 0.4rem;
+    color: var(--tb-border-strong);
 }
 
 .clock__exch-tz {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--tb-text-faint);
-  top: 2px;
-  position: relative;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--tb-text-faint);
+    top: 2px;
+    position: relative;
 }
 
 .clock__exch-tz::before {
-  content: '·';
-  margin-right: 0.4rem;
-  color: var(--tb-border-strong);
+    content: '·';
+    margin-right: 0.4rem;
+    color: var(--tb-border-strong);
 }
 
 @media (max-width: 760px) {
-  .clock__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .clock__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

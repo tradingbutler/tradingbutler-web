@@ -1,35 +1,44 @@
 <section class="fng" [attr.aria-label]="title()">
-  <div class="fng__card">
-    <div class="fng__intro">
-      <span class="tb-eyebrow">{{ eyebrow() }}</span>
-      <h2 class="fng__title">{{ title() }}</h2>
-      <p class="fng__sub">{{ sub() }}</p>
-      <p class="fng__source">{{ source() }}</p>
-    </div>
+    <div class="fng__card">
+        <div class="fng__intro">
+            <span class="tb-eyebrow">{{ eyebrow() }}</span>
+            <h2 class="fng__title">{{ title() }}</h2>
+            <p class="fng__sub">{{ sub() }}</p>
+            <p class="fng__source">{{ source() }}</p>
+        </div>
 
-    <div class="fng__gauge" role="img"
-         [attr.aria-label]="status() === 'ready'
-            ? value() + ' out of 100 — ' + classification()
-            : 'Fear and Greed index'">
-      @switch (status()) {
-        @case ('ready') {
-          <span class="fng__value tb-num" [style.color]="color()">{{ value() }}</span>
-          <span class="fng__label" [style.color]="color()">{{ classification() }}</span>
-          <span class="fng__meter" aria-hidden="true">
-            <span class="fng__marker" [style.left.%]="value()" [style.background]="color()"></span>
-          </span>
-          <span class="fng__scale" aria-hidden="true">
-            <span>Extreme fear</span>
-            <span>Extreme greed</span>
-          </span>
-        }
-        @case ('error') {
-          <span class="fng__msg">Sentiment data is unavailable right now.</span>
-        }
-        @default {
-          <span class="fng__msg">Loading sentiment…</span>
-        }
-      }
+        <div
+            class="fng__gauge"
+            role="img"
+            [attr.aria-label]="
+                status() === 'ready'
+                    ? value() + ' out of 100 — ' + classification()
+                    : 'Fear and Greed index'
+            "
+        >
+            @switch (status()) {
+                @case ('ready') {
+                    <span class="fng__value tb-num" [style.color]="color()">{{ value() }}</span>
+                    <span class="fng__label" [style.color]="color()">{{ classification() }}</span>
+                    <span class="fng__meter" aria-hidden="true">
+                        <span
+                            class="fng__marker"
+                            [style.left.%]="value()"
+                            [style.background]="color()"
+                        ></span>
+                    </span>
+                    <span class="fng__scale" aria-hidden="true">
+                        <span>Extreme fear</span>
+                        <span>Extreme greed</span>
+                    </span>
+                }
+                @case ('error') {
+                    <span class="fng__msg">Sentiment data is unavailable right now.</span>
+                }
+                @default {
+                    <span class="fng__msg">Loading sentiment…</span>
+                }
+            }
+        </div>
     </div>
-  </div>
 </section>

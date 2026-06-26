@@ -1,213 +1,215 @@
 .markets__head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
 }
 
 .markets__title {
-  margin: 0.5rem 0 0;
-  font-size: 1.7rem;
-  font-weight: 700;
+    margin: 0.5rem 0 0;
+    font-size: 1.7rem;
+    font-weight: 700;
 }
 
 .markets__sub {
-  margin: 0.35rem 0 0;
-  color: var(--tb-text-muted);
-  font-size: 0.95rem;
+    margin: 0.35rem 0 0;
+    color: var(--tb-text-muted);
+    font-size: 0.95rem;
 }
 
 .markets__selector {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
 
-  label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--tb-text-faint);
-  }
+    label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--tb-text-faint);
+    }
 }
 
 .markets__select-wrap {
-  position: relative;
+    position: relative;
 
-  &::after {
-    content: '';
-    position: absolute;
-    right: 0.95rem;
-    top: 50%;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-right: 2px solid var(--tb-text-muted);
-    border-bottom: 2px solid var(--tb-text-muted);
-    transform: translateY(-65%) rotate(45deg);
-    pointer-events: none;
-  }
-
-  select {
-    appearance: none;
-    -webkit-appearance: none;
-    min-width: 180px;
-    padding: 0.55rem 2.4rem 0.55rem 0.9rem;
-    border-radius: var(--tb-radius-sm);
-    border: 1px solid var(--tb-border-strong);
-    background: var(--tb-surface-2);
-    color: var(--tb-text);
-    font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-
-    &:hover {
-      border-color: var(--tb-accent);
+    &::after {
+        content: '';
+        position: absolute;
+        right: 0.95rem;
+        top: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-right: 2px solid var(--tb-text-muted);
+        border-bottom: 2px solid var(--tb-text-muted);
+        transform: translateY(-65%) rotate(45deg);
+        pointer-events: none;
     }
 
-    &:focus-visible {
-      outline: none;
-      border-color: var(--tb-accent);
-      box-shadow: 0 0 0 3px var(--tb-accent-soft);
+    select {
+        appearance: none;
+        -webkit-appearance: none;
+        min-width: 180px;
+        padding: 0.55rem 2.4rem 0.55rem 0.9rem;
+        border-radius: var(--tb-radius-sm);
+        border: 1px solid var(--tb-border-strong);
+        background: var(--tb-surface-2);
+        color: var(--tb-text);
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+
+        &:hover {
+            border-color: var(--tb-accent);
+        }
+
+        &:focus-visible {
+            outline: none;
+            border-color: var(--tb-accent);
+            box-shadow: 0 0 0 3px var(--tb-accent-soft);
+        }
     }
-  }
 }
 
 .markets__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
-  gap: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+    gap: 1.25rem;
 }
 
 .markets__card {
-  border: 1px solid var(--tb-border);
-  border-radius: var(--tb-radius);
-  background: var(--tb-surface);
-  box-shadow: var(--tb-shadow);
-  overflow: hidden;
+    border: 1px solid var(--tb-border);
+    border-radius: var(--tb-radius);
+    background: var(--tb-surface);
+    box-shadow: var(--tb-shadow);
+    overflow: hidden;
 }
 
 .markets__class {
-  margin: 0;
-  padding: 0.9rem 1.25rem;
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--tb-accent);
-  background: var(--tb-surface-2);
-  border-bottom: 1px solid var(--tb-border);
+    margin: 0;
+    padding: 0.9rem 1.25rem;
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--tb-accent);
+    background: var(--tb-surface-2);
+    border-bottom: 1px solid var(--tb-border);
 }
 
 .markets__table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  font-size: 0.9rem;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 0.9rem;
 
-  /* Columns: 1 Broker (flexes), 2 Symbol, 3 Price, 4 Change, 5 Spread. */
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 104px;
-  }
+    /* Columns: 1 Broker (flexes), 2 Symbol, 3 Price, 4 Change, 5 Spread. */
+    th:nth-child(2),
+    td:nth-child(2) {
+        width: 104px;
+    }
 
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 104px;
-  }
+    th:nth-child(3),
+    td:nth-child(3) {
+        width: 104px;
+    }
 
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 104px;
-  }
+    th:nth-child(4),
+    td:nth-child(4) {
+        width: 104px;
+    }
 
-  th:nth-child(5),
-  td:nth-child(5) {
-    width: 96px;
-  }
+    th:nth-child(5),
+    td:nth-child(5) {
+        width: 96px;
+    }
 
-  thead th {
-    padding: 0.6rem 0.85rem;
-    text-align: left;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--tb-text-faint);
-    border-bottom: 1px solid var(--tb-border);
-  }
+    thead th {
+        padding: 0.6rem 0.85rem;
+        text-align: left;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--tb-text-faint);
+        border-bottom: 1px solid var(--tb-border);
+    }
 
-  /* Numeric headers sit right, flush over their right-aligned values. */
-  thead th.markets__col-num {
-    text-align: right;
-  }
+    /* Numeric headers sit right, flush over their right-aligned values. */
+    thead th.markets__col-num {
+        text-align: right;
+    }
 
-  tbody td {
-    padding: 0.7rem 0.85rem;
-    border-bottom: 1px solid var(--tb-border);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    tbody td {
+        padding: 0.7rem 0.85rem;
+        border-bottom: 1px solid var(--tb-border);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
-  tbody tr:last-child td {
-    border-bottom: none;
-  }
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
 
-  tbody tr {
-    transition: background 0.12s ease;
-  }
+    tbody tr {
+        transition: background 0.12s ease;
+    }
 
-  tbody tr:hover {
-    background: var(--tb-surface-2);
-  }
+    tbody tr:hover {
+        background: var(--tb-surface-2);
+    }
 }
 
 .markets__col-num {
-  text-align: right;
+    text-align: right;
 }
 
 .markets__symbol {
-  font-weight: 600;
-  color: var(--tb-text);
-  overflow: visible;
-  text-overflow: clip;
+    font-weight: 600;
+    color: var(--tb-text);
+    overflow: visible;
+    text-overflow: clip;
 }
 
 .markets__broker {
-  color: var(--tb-text-muted);
+    color: var(--tb-text-muted);
 }
 
 .markets__spread {
-  color: var(--tb-text);
+    color: var(--tb-text);
 }
 
 .markets__change--up {
-  color: var(--tb-green);
+    color: var(--tb-green);
 }
 
 .markets__change--down {
-  color: var(--tb-red);
+    color: var(--tb-red);
 }
 
 .markets__change--flat {
-  color: var(--tb-accent);
+    color: var(--tb-accent);
 }
 
 .markets__muted {
-  color: var(--tb-text-faint);
+    color: var(--tb-text-faint);
 }
 
 @media (max-width: 480px) {
-  .markets__grid {
-    grid-template-columns: 1fr;
-  }
+    .markets__grid {
+        grid-template-columns: 1fr;
+    }
 
-  .markets__table thead th,
-  .markets__table tbody td {
-    padding: 0.6rem 0.8rem;
-  }
+    .markets__table thead th,
+    .markets__table tbody td {
+        padding: 0.6rem 0.8rem;
+    }
 }
