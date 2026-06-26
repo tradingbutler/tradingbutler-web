@@ -4,6 +4,7 @@
   align-items: center;
   gap: 3rem;
   padding: 2rem 0 1rem;
+  margin-top: 25px;
 }
 
 .hero__copy {
@@ -18,7 +19,8 @@
 
 .hero__title {
   margin: 0;
-  font-size: clamp(2.1rem, 4.2vw, 3.1rem);
+  /* font-size: clamp(2.1rem, 4.2vw, 3.1rem);*/
+  font-size: 3.5rem;
   font-weight: 800;
 }
 
@@ -307,6 +309,7 @@
     position: relative;
     z-index: 1;
     width: 100%;
+    top: -50px;
   }
 }
 
