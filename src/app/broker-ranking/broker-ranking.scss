@@ -15,11 +15,19 @@
 }
 
 .ranking__card {
+    /* No overflow:hidden here — it would clip the instrument dropdown menu.
+       The table is clipped by .ranking__table-wrap instead. */
     border: 1px solid var(--tb-border);
     border-radius: var(--tb-radius);
     background: var(--tb-surface);
     box-shadow: var(--tb-shadow);
+}
+
+/* Clips the table to the card's rounded bottom corners, while leaving the
+   toolbar (and its dropdown) free to overflow. */
+.ranking__table-wrap {
     overflow: hidden;
+    border-radius: 0 0 var(--tb-radius) var(--tb-radius);
 }
 
 .ranking__toolbar {
@@ -30,6 +38,7 @@
     padding: 0.9rem 1.25rem;
     background: var(--tb-surface-2);
     border-bottom: 1px solid var(--tb-border);
+    border-radius: var(--tb-radius) var(--tb-radius) 0 0;
 }
 
 .ranking__toolbar-label {
@@ -164,8 +173,18 @@
 }
 
 .ranking__rank--top {
-    background: var(--tb-accent);
-    color: var(--tb-accent-contrast);
+    background: linear-gradient(180deg, #f4d27c, #cf9a2c);
+    color: #2a1c02;
+}
+
+.ranking__rank--silver {
+    background: linear-gradient(180deg, #e4e8f0, #b6bece);
+    color: #1a1d23;
+}
+
+.ranking__rank--bronze {
+    background: linear-gradient(180deg, #dca074, #b3702f);
+    color: #2a1606;
 }
 
 .ranking__broker-row {
@@ -283,22 +302,84 @@
     color: var(--tb-text-faint);
 }
 
+/* Mobile: render each broker as a stacked card instead of a wide table. */
 @media (max-width: 720px) {
-    .ranking__card {
-        overflow-x: auto;
+    .ranking__table,
+    .ranking__table tbody,
+    .ranking__table tr,
+    .ranking__table td {
+        display: block;
+        width: auto;
     }
 
     .ranking__table {
-        font-size: 0.88rem;
-        min-width: 720px;
+        table-layout: auto;
     }
 
-    .ranking__sub {
+    .ranking__table thead {
         display: none;
     }
 
-    .ranking__table thead th,
+    .ranking__table tbody tr {
+        position: relative;
+        padding: 1rem 1.1rem 1.1rem;
+        border-bottom: 1px solid var(--tb-border);
+    }
+
     .ranking__table tbody td {
-        padding: 0.75rem 0.75rem;
+        padding: 0;
+        border: none;
+        text-align: left;
+    }
+
+    /* Rank badge floats in the card's top-right corner. */
+    .ranking__table tbody td:first-child {
+        position: absolute;
+        top: 1rem;
+        right: 1.1rem;
+        margin: 0;
+    }
+
+    .ranking__broker {
+        padding-right: 2.5rem; /* clear the rank badge */
+        margin-bottom: 0.75rem;
+    }
+
+    .ranking__col-graph {
+        margin: 0.25rem 0 0.85rem;
+    }
+
+    /* Labelled value rows (Buy / Sell / Spread / History). */
+    .ranking__table td[data-label] {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border-top: 1px solid var(--tb-border);
+    }
+
+    .ranking__table td[data-label]::before {
+        content: attr(data-label);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--tb-text-faint);
+    }
+
+    .ranking__col-graph app-spread-history {
+        max-width: 140px;
+    }
+
+    .ranking__col-action {
+        margin-top: 0.9rem;
+    }
+
+    .ranking__cta {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem 1rem;
     }
 }

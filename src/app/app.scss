@@ -202,3 +202,23 @@
         gap: 1.5rem;
     }
 }
+
+@media (max-width: 520px) {
+    .page {
+        padding: 0 1rem 3rem;
+        gap: 2.5rem;
+    }
+
+    .final-cta__inner {
+        padding: 2.5rem 1.25rem;
+    }
+
+    .page-footer__inner {
+        padding: 2.5rem 1rem 2rem;
+    }
+
+    .page-footer__top {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+}

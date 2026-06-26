@@ -113,7 +113,7 @@
     /* Columns: 1 Broker (flexes), 2 Symbol, 3 Price, 4 Change, 5 Spread. */
     th:nth-child(2),
     td:nth-child(2) {
-        width: 104px;
+        width: 124px;
     }
 
     th:nth-child(3),
@@ -173,10 +173,14 @@
 }
 
 .markets__symbol {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-weight: 600;
     color: var(--tb-text);
     overflow: visible;
     text-overflow: clip;
+    white-space: nowrap;
 }
 
 .markets__broker {
@@ -203,13 +207,39 @@
     color: var(--tb-text-faint);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     .markets__grid {
         grid-template-columns: 1fr;
     }
 
+    .markets__table {
+        font-size: 0.85rem;
+    }
+
+    /* Drop the secondary "Change" column so Broker/Symbol/Price/Spread fit. */
+    .markets__table th:nth-child(4),
+    .markets__table td:nth-child(4) {
+        display: none;
+    }
+
+    /* Symbol needs room for its icon + label. */
+    .markets__table th:nth-child(2),
+    .markets__table td:nth-child(2) {
+        width: 108px;
+    }
+
+    .markets__table th:nth-child(3),
+    .markets__table td:nth-child(3) {
+        width: 66px;
+    }
+
+    .markets__table th:nth-child(5),
+    .markets__table td:nth-child(5) {
+        width: 64px;
+    }
+
     .markets__table thead th,
     .markets__table tbody td {
-        padding: 0.6rem 0.8rem;
+        padding: 0.55rem 0.6rem;
     }
 }

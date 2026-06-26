@@ -50,7 +50,10 @@
                                 } @else {
                                     <td class="markets__broker markets__muted">—</td>
                                 }
-                                <td class="markets__symbol">{{ row.symbol.label }}</td>
+                                <td class="markets__symbol">
+                                    <app-symbol-icon [code]="row.symbol.code" />
+                                    <span>{{ row.symbol.label }}</span>
+                                </td>
                                 @if (row.quote) {
                                     <td class="markets__col-num">
                                         {{ mid(row.quote) | number: digitsFor(row.symbol.code) }}

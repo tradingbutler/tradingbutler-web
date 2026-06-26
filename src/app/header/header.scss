@@ -121,3 +121,19 @@
         display: none;
     }
 }
+
+@media (max-width: 480px) {
+    .site-header {
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .site-header__tagline {
+        display: none;
+    }
+
+    .site-header__cta {
+        padding: 0.5rem 0.9rem;
+        font-size: 0.85rem;
+    }
+}

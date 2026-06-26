@@ -4,10 +4,11 @@ import { BROKERS } from '../core/brokers';
 import { PriceQuote } from '../core/price-quote';
 import { MarketData } from '../core/market-data';
 import { digitsFor } from '../core/symbols';
+import { SymbolIcon } from '../shared/symbol-icon';
 
 @Component({
     selector: 'app-markets',
-    imports: [DecimalPipe],
+    imports: [DecimalPipe, SymbolIcon],
     templateUrl: './markets.html',
     styleUrl: './markets.scss',
 })

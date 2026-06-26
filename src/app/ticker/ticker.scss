@@ -84,3 +84,10 @@
         animation: none;
     }
 }
+
+/* Hide the marquee on mobile screens. */
+@media (max-width: 760px) {
+    :host {
+        display: none;
+    }
+}

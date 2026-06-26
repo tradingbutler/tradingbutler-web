@@ -10,23 +10,13 @@
     <div class="ranking__card">
         <div class="ranking__toolbar">
             <span class="ranking__toolbar-label">Instrument</span>
-            <div class="ranking__select-wrap">
-                <select aria-label="Select instrument" (change)="onSymbolChange($event)">
-                    @for (symbol of symbols; track symbol.code) {
-                        <option
-                            [value]="symbol.code"
-                            [selected]="symbol.code === marketData.selectedSymbol()"
-                        >
-                            {{ symbol.label }}
-                        </option>
-                    }
-                </select>
-            </div>
+            <app-symbol-select />
         </div>
 
-        @if (marketData.rankingForSelected().length === 0) {
-            <p class="ranking__empty">Waiting for live prices…</p>
-        } @else {
+        <div class="ranking__table-wrap">
+            @if (marketData.rankingForSelected().length === 0) {
+                <p class="ranking__empty">Waiting for live prices…</p>
+            } @else {
             <table class="ranking__table tb-num">
                 <thead>
                     <tr>
@@ -47,9 +37,13 @@
                     ) {
                         <tr [class.ranking__row--top]="i === 0">
                             <td>
-                                <span class="ranking__rank" [class.ranking__rank--top]="i === 0">{{
-                                    i + 1
-                                }}</span>
+                                <span
+                                    class="ranking__rank"
+                                    [class.ranking__rank--top]="i === 0"
+                                    [class.ranking__rank--silver]="i === 1"
+                                    [class.ranking__rank--bronze]="i === 2"
+                                    >{{ i + 1 }}</span
+                                >
                             </td>
                             <td class="ranking__broker">
                                 <span class="ranking__broker-row">
@@ -85,12 +79,12 @@
                                     }
                                 </span>
                             </td>
-                            <td class="ranking__col-graph">
+                            <td class="ranking__col-graph" data-label="History">
                                 <app-spread-history
                                     [data]="marketData.spreadHistory(quote.symbol, quote.broker_id)"
                                 />
                             </td>
-                            <td class="ranking__col-num">
+                            <td class="ranking__col-num" data-label="Buy">
                                 <span
                                     class="ranking__quote"
                                     [class.ranking__quote--up]="quote.change_pct > 0.01"
@@ -106,7 +100,7 @@
                                     {{ quote.ask | number: digitsFor(quote.symbol) }}
                                 </span>
                             </td>
-                            <td class="ranking__col-num">
+                            <td class="ranking__col-num" data-label="Sell">
                                 <span
                                     class="ranking__quote"
                                     [class.ranking__quote--up]="quote.change_pct > 0.01"
@@ -122,7 +116,7 @@
                                     {{ quote.bid | number: digitsFor(quote.symbol) }}
                                 </span>
                             </td>
-                            <td class="ranking__col-num ranking__spread">
+                            <td class="ranking__col-num ranking__spread" data-label="Spread">
                                 {{ quote.spread | number: digitsFor(quote.symbol) }}
                             </td>
                             <td class="ranking__col-action">
@@ -139,6 +133,7 @@
                     }
                 </tbody>
             </table>
-        }
+            }
+        </div>
     </div>
 </section>

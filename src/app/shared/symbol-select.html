@@ -1,0 +1,31 @@
+<div class="ssel" [class.ssel--open]="open()">
+    <button
+        type="button"
+        class="ssel__trigger"
+        [attr.aria-expanded]="open()"
+        aria-haspopup="listbox"
+        aria-label="Select instrument"
+        (click)="toggle($event)"
+    >
+        <app-symbol-icon [code]="selected()" />
+        <span class="ssel__label">{{ current()?.label }}</span>
+        <span class="ssel__caret" aria-hidden="true"></span>
+    </button>
+
+    @if (open()) {
+        <ul class="ssel__menu" role="listbox">
+            @for (s of symbols; track s.code) {
+                <li
+                    class="ssel__opt"
+                    role="option"
+                    [attr.aria-selected]="s.code === selected()"
+                    [class.ssel__opt--active]="s.code === selected()"
+                    (click)="pick(s.code)"
+                >
+                    <app-symbol-icon [code]="s.code" />
+                    <span class="ssel__opt-label">{{ s.label }}</span>
+                </li>
+            }
+        </ul>
+    }
+</div>
