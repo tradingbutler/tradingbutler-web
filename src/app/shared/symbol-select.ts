@@ -21,7 +21,7 @@ import { SymbolIcon } from './symbol-icon';
 export class SymbolSelect {
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
     protected readonly marketData = inject(MarketData);
-    protected readonly symbols = SYMBOL_LIST;
+    protected readonly symbols = this.marketData.availableSymbols;
     protected readonly open = signal(false);
 
     protected readonly selected = this.marketData.selectedSymbol;

@@ -6,7 +6,9 @@ import { BrokerRecord } from './broker-registry';
 import { BROKERS } from './brokers';
 import { PriceQuote } from './price-quote';
 import { RateRecord, RatesSnapshot } from './rate-registry';
+import { RateTickMessage } from './rate-tick';
 import { PricesWs } from './prices-ws';
+import { RatesWs } from './rates-ws';
 import { ASSET_CLASS_ORDER, AssetClass, SYMBOL_LIST, SymbolMeta } from './symbols';
 
 export interface MarketRow {
@@ -38,6 +40,7 @@ const TICK_MS = 1500;
 export class MarketData implements OnDestroy {
     private readonly api = inject(Api);
     private readonly pricesWs = inject(PricesWs);
+    private readonly ratesWs = inject(RatesWs);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
     readonly selectedSymbol = signal<string>(SYMBOL_LIST[0].code);
@@ -66,6 +69,18 @@ export class MarketData implements OnDestroy {
         return next;
     });
 
+    /** SYMBOL_LIST entries that have at least one broker's live tick in
+     *  `ratesSnapshot` — drives the instrument dropdown once real data loads. */
+    readonly availableSymbols = computed<SymbolMeta[]>(() => {
+        const codes = new Set<string>();
+        for (const bySymbol of Object.values(this.ratesSnapshot())) {
+            for (const code of Object.keys(bySymbol)) {
+                codes.add(code);
+            }
+        }
+        return SYMBOL_LIST.filter((s) => codes.has(s.code));
+    });
+
     /** Current mid price per symbol, and the baseline captured at seed for % change. */
     private readonly mids = new Map<string, number>();
     private readonly baselines = new Map<string, number>();
@@ -75,6 +90,7 @@ export class MarketData implements OnDestroy {
     private static readonly HISTORY_LEN = 24;
 
     private wsSub?: Subscription;
+    private ratesWsSub?: Subscription;
     private simTimer?: ReturnType<typeof setInterval>;
     private started = false;
 
@@ -133,12 +149,17 @@ export class MarketData implements OnDestroy {
         }
         this.started = true;
 
-        this.api.getBrokers().subscribe((registry) => {
-            this.brokerRegistry.set(new Map(Object.entries(registry)));
+        this.api.getBrokers().subscribe({
+            next: (registry) => this.brokerRegistry.set(new Map(Object.entries(registry))),
+            error: (err) => console.error('[MarketData] getBrokers failed', err),
         });
-        this.api.getRates().subscribe((snapshot) => {
-            this.ratesSnapshot.set(snapshot);
+        this.api.getRates().subscribe({
+            next: (snapshot) => this.ratesSnapshot.set(snapshot),
+            error: (err) => console.error('[MarketData] getRates failed', err),
         });
+        // Snapshot above seeds the initial view; rate-streamer then pushes
+        // per-symbol ticks continuously so spreads keep updating live.
+        this.ratesWsSub = this.ratesWs.connect().subscribe((msg) => this.upsertRate(msg));
 
         if (SIMULATE) {
             this.simTimer = setInterval(() => this.tick(), TICK_MS);
@@ -146,10 +167,13 @@ export class MarketData implements OnDestroy {
         }
 
         // Real backend wiring (enabled in the backend phase):
-        this.api.getPrices().subscribe((initial) => {
-            for (const quote of initial) {
-                this.upsert(quote);
-            }
+        this.api.getPrices().subscribe({
+            next: (initial) => {
+                for (const quote of initial) {
+                    this.upsert(quote);
+                }
+            },
+            error: (err) => console.error('[MarketData] getPrices failed', err),
         });
         this.wsSub = this.pricesWs.connect().subscribe((quote) => this.upsert(quote));
     }
@@ -210,6 +234,15 @@ export class MarketData implements OnDestroy {
         const next = new Map(this.quotes());
         next.set(`${quote.symbol}:${quote.broker_id}`, quote);
         this.quotes.set(next);
+    }
+
+    /** Merges one live tick from rate-streamer into `ratesSnapshot`, leaving
+     *  every other broker/symbol untouched. */
+    private upsertRate(msg: RateTickMessage): void {
+        const snapshot = this.ratesSnapshot();
+        const next: RatesSnapshot = { ...snapshot };
+        next[msg.broker] = { ...snapshot[msg.broker], [msg.symbol]: msg.data };
+        this.ratesSnapshot.set(next);
     }
 
     /** Top 3 brokers for the selected symbol, built from the real downloaded
@@ -274,6 +307,7 @@ export class MarketData implements OnDestroy {
 
     ngOnDestroy(): void {
         this.wsSub?.unsubscribe();
+        this.ratesWsSub?.unsubscribe();
         if (this.simTimer) {
             clearInterval(this.simTimer);
         }

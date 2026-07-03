@@ -14,7 +14,7 @@
 
     @if (open()) {
         <ul class="ssel__menu" role="listbox">
-            @for (s of symbols; track s.code) {
+            @for (s of symbols(); track s.code) {
                 <li
                     class="ssel__opt"
                     role="option"

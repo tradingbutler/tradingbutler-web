@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { MarketData } from '../core/market-data';
 import { SymbolSelect } from './symbol-select';
 
 describe('SymbolSelect', () => {
@@ -9,6 +10,19 @@ describe('SymbolSelect', () => {
         await TestBed.configureTestingModule({
             imports: [SymbolSelect],
         }).compileComponents();
+        // The dropdown only lists symbols with a live tick in `ratesSnapshot`
+        // (see MarketData.availableSymbols) — seed one so the menu isn't empty.
+        TestBed.inject(MarketData).ratesSnapshot.set({
+            exness: {
+                EURUSD: {
+                    d: [],
+                    i: [],
+                    s: 'EURUSD',
+                    t: 'h1',
+                    x: { tick: { a: 1.0855, b: 1.0854, f: 5, l: 0, m: 0, r: 0, t: 0, v: 0 } },
+                },
+            },
+        });
         fixture = TestBed.createComponent(SymbolSelect);
         await fixture.whenStable();
     });
@@ -24,8 +38,6 @@ describe('SymbolSelect', () => {
         await fixture.whenStable();
         fixture.detectChanges();
         const opts = fixture.nativeElement.querySelectorAll('.ssel__opt');
-        // eslint-disable-next-line no-console
-        console.log('OPTION COUNT =', opts.length);
         expect(opts.length).toBeGreaterThan(0);
     });
 });
