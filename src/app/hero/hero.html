@@ -34,7 +34,9 @@
                                     }
                                 </span>
                                 <span class="hero-rank__meta tb-num">
-                                    ★ {{ quote.broker_rating }}
+                                    @if (quote.broker_rating) {
+                                        ★ {{ quote.broker_rating }}
+                                    }
                                     @if (quote.regulator) {
                                         · {{ quote.regulator }}
                                     }

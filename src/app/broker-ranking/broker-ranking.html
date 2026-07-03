@@ -55,23 +55,20 @@
                                     }
                                 </span>
                                 <span class="ranking__broker-sub">
-                                    <span
-                                        class="ranking__stars"
-                                        [attr.aria-label]="quote.broker_rating + ' out of 5 stars'"
-                                    >
-                                        @for (
-                                            _ of stars(quote.broker_rating).filled;
-                                            track $index
-                                        ) {
-                                            <span>★</span>
-                                        }
-                                        @for (_ of stars(quote.broker_rating).empty; track $index) {
-                                            <span class="ranking__star--empty">★</span>
-                                        }
-                                    </span>
-                                    <span class="ranking__rating-num">{{
-                                        quote.broker_rating
-                                    }}</span>
+                                    @if (quote.broker_rating; as rating) {
+                                        <span
+                                            class="ranking__stars"
+                                            [attr.aria-label]="rating + ' out of 5 stars'"
+                                        >
+                                            @for (_ of stars(rating).filled; track $index) {
+                                                <span>★</span>
+                                            }
+                                            @for (_ of stars(rating).empty; track $index) {
+                                                <span class="ranking__star--empty">★</span>
+                                            }
+                                        </span>
+                                        <span class="ranking__rating-num">{{ rating }}</span>
+                                    }
                                     @if (quote.regulator) {
                                         <span class="ranking__reg"
                                             >· Regulated · {{ quote.regulator }}</span

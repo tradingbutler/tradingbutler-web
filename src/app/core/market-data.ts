@@ -2,8 +2,10 @@ import { isPlatformBrowser } from '@angular/common';
 import { Injectable, OnDestroy, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Api } from './api';
+import { BrokerRecord } from './broker-registry';
 import { BROKERS } from './brokers';
 import { PriceQuote } from './price-quote';
+import { RateRecord, RatesSnapshot } from './rate-registry';
 import { PricesWs } from './prices-ws';
 import { ASSET_CLASS_ORDER, AssetClass, SYMBOL_LIST, SymbolMeta } from './symbols';
 
@@ -15,6 +17,13 @@ export interface MarketRow {
 export interface MarketGroup {
     assetClass: AssetClass;
     rows: MarketRow[];
+}
+
+/** A broker joined with its latest rates snapshot, correlated by broker id. */
+export interface BrokerRates {
+    id: string;
+    broker?: BrokerRecord;
+    rates: Record<string, RateRecord>;
 }
 
 /**
@@ -36,6 +45,26 @@ export class MarketData implements OnDestroy {
     readonly selectedBroker = signal<string>('best');
 
     private readonly quotes = signal<ReadonlyMap<string, PriceQuote>>(new Map());
+
+    /** Real broker metadata (name, logo, affiliate link) downloaded from
+     *  `brokers.json` on page load. Empty until that request resolves. */
+    readonly brokerRegistry = signal<ReadonlyMap<string, BrokerRecord>>(new Map());
+
+    /** Real broker_id -> symbol -> latest tick snapshot downloaded from
+     *  `rates.json` on page load. Empty until that request resolves. */
+    readonly ratesSnapshot = signal<RatesSnapshot>({});
+
+    /** `brokerRegistry` and `ratesSnapshot` joined by broker id. */
+    readonly brokerRates = computed<ReadonlyMap<string, BrokerRates>>(() => {
+        const brokers = this.brokerRegistry();
+        const rates = this.ratesSnapshot();
+        const ids = new Set<string>([...brokers.keys(), ...Object.keys(rates)]);
+        const next = new Map<string, BrokerRates>();
+        for (const id of ids) {
+            next.set(id, { id, broker: brokers.get(id), rates: rates[id] ?? {} });
+        }
+        return next;
+    });
 
     /** Current mid price per symbol, and the baseline captured at seed for % change. */
     private readonly mids = new Map<string, number>();
@@ -103,6 +132,13 @@ export class MarketData implements OnDestroy {
             return;
         }
         this.started = true;
+
+        this.api.getBrokers().subscribe((registry) => {
+            this.brokerRegistry.set(new Map(Object.entries(registry)));
+        });
+        this.api.getRates().subscribe((snapshot) => {
+            this.ratesSnapshot.set(snapshot);
+        });
 
         if (SIMULATE) {
             this.simTimer = setInterval(() => this.tick(), TICK_MS);
@@ -176,12 +212,35 @@ export class MarketData implements OnDestroy {
         this.quotes.set(next);
     }
 
+    /** Top 3 brokers for the selected symbol, built from the real downloaded
+     *  broker + rates data (`brokerRates`) rather than the simulation. */
     readonly rankingForSelected = computed<PriceQuote[]>(() => {
         const symbol = this.selectedSymbol();
-        return Array.from(this.quotes().values())
-            .filter((q) => q.symbol === symbol)
-            .sort((a, b) => a.spread - b.spread)
-            .slice(0, 5);
+        const assetClass = SYMBOL_LIST.find((s) => s.code === symbol)?.assetClass ?? '';
+        const rows: PriceQuote[] = [];
+        for (const { id, broker, rates } of this.brokerRates().values()) {
+            const record = rates[symbol];
+            if (!record) {
+                continue;
+            }
+            const { a: ask, b: bid, m: ts } = record.x.tick;
+            // Real ticks can arrive crossed (bid > ask) on a glitch; clamp so a bad
+            // tick can't sort to the top of a "tightest spread" ranking.
+            const spread = Math.max(0, ask - bid);
+            rows.push({
+                broker_id: id,
+                broker_name: broker?.name ?? id,
+                affiliate_url: broker?.open_account_url ?? '#',
+                symbol,
+                asset_class: assetClass,
+                bid,
+                ask,
+                spread,
+                change_pct: 0,
+                ts,
+            });
+        }
+        return rows.sort((a, b) => a.spread - b.spread).slice(0, 3);
     });
 
     /** Every live quote (one per broker+symbol that has reported). */

@@ -1,6 +1,6 @@
 {
     "/ws": {
-        "target": "http://127.0.0.1:20002",
+        "target": "http://127.0.0.1:14000",
         "secure": false,
         "changeOrigin": true,
         "ws": true
