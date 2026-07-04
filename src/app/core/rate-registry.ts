@@ -4,7 +4,7 @@ export interface RateTick {
     a: number;
     /** Bid price. */
     b: number;
-    /** Price digits. */
+    /** Tick flags (not decimal precision — see `RateRecord.i` for that). */
     f: number;
     l: number;
     /** Epoch milliseconds. */
@@ -19,6 +19,8 @@ export interface RateTick {
 /** A single symbol entry from the json-writer rates snapshot (`rates.json`). */
 export interface RateRecord {
     d: number[];
+    /** `i[1]` is this instrument's decimal precision — the number of digits
+     *  bid/ask/spread should be fixed to (e.g. `toFixed(i[1])`). */
     i: number[];
     /** Symbol code. */
     s: string;

@@ -192,10 +192,18 @@ export class MarketData implements OnDestroy {
         symbol: string,
         record: RateRecord,
     ): PriceQuote {
-        const { a: ask, b: bid, f: digits, m: ts } = record.x.tick;
+        const { a: rawAsk, b: rawBid, m: ts } = record.x.tick;
+        const digits = record.i?.[1];
         // Real ticks can arrive crossed (bid > ask) on a glitch; clamp so a bad
         // tick can't sort to the top of a "tightest spread" ranking.
-        const spread = Math.max(0, ask - bid);
+        const rawSpread = Math.max(0, rawAsk - rawBid);
+        // Force fixed-point notation at the broker-reported precision so raw
+        // float noise (e.g. 12.000000000000002) never leaks into sorting,
+        // averages, or the sparkline history — not just display formatting.
+        const fixed = (n: number) => (digits === undefined ? n : Number(n.toFixed(digits)));
+        const bid = fixed(rawBid);
+        const ask = fixed(rawAsk);
+        const spread = fixed(rawSpread);
         return {
             broker_id: id,
             broker_name: broker?.name ?? id,

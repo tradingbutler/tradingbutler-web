@@ -61,9 +61,10 @@ const DECIMALS = new Map(SYMBOL_LIST.map((s) => [s.code, s.decimals]));
 const MAX_DIGITS = 5;
 
 /** DecimalPipe digitsInfo string for a symbol, e.g. "1.5-5". Prefers the
- *  broker-reported live precision (`liveDigits`, from a tick's `f` field) over
- *  the static per-symbol guess, since real brokers don't all quote at the same
- *  precision — but caps it at `MAX_DIGITS`. Falls back to 2dp when neither is known. */
+ *  broker-reported live precision (`liveDigits`, from a tick record's `i[1]`
+ *  field) over the static per-symbol guess, since real brokers don't all quote
+ *  at the same precision — but caps it at `MAX_DIGITS`. Falls back to 2dp when
+ *  neither is known. */
 export function digitsFor(code: string, liveDigits?: number): string {
     const d = Math.min(liveDigits ?? DECIMALS.get(code) ?? 2, MAX_DIGITS);
     return `1.${d}-${d}`;
