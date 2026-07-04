@@ -7,7 +7,6 @@ import { BROKERS } from './brokers';
 import { PriceQuote } from './price-quote';
 import { RateRecord, RatesSnapshot } from './rate-registry';
 import { RateTickMessage } from './rate-tick';
-import { PricesWs } from './prices-ws';
 import { RatesWs } from './rates-ws';
 import { ASSET_CLASS_ORDER, AssetClass, SYMBOL_LIST, SymbolMeta } from './symbols';
 
@@ -28,18 +27,9 @@ export interface BrokerRates {
     rates: Record<string, RateRecord>;
 }
 
-/**
- * Website phase: prices are simulated entirely in the browser so the tables,
- * ticker and spreads look alive without a backend. Flip SIMULATE to false (and
- * wire start() to Api/PricesWs) once the real streaming backend is connected.
- */
-const SIMULATE = true;
-const TICK_MS = 1500;
-
 @Injectable({ providedIn: 'root' })
 export class MarketData implements OnDestroy {
     private readonly api = inject(Api);
-    private readonly pricesWs = inject(PricesWs);
     private readonly ratesWs = inject(RatesWs);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -47,14 +37,17 @@ export class MarketData implements OnDestroy {
     /** Broker shown in the live-markets board: 'best' = tightest per instrument, or a broker id. */
     readonly selectedBroker = signal<string>('best');
 
-    private readonly quotes = signal<ReadonlyMap<string, PriceQuote>>(new Map());
+    /** Deterministic placeholder quotes so SSR/first paint render populated
+     *  tables before `brokers.json`/`rates.json`/the live socket resolve.
+     *  `effectiveQuotes` overrides these per broker+symbol with real ticks. */
+    private readonly seedQuotes = signal<ReadonlyMap<string, PriceQuote>>(new Map());
 
     /** Real broker metadata (name, logo, affiliate link) downloaded from
      *  `brokers.json` on page load. Empty until that request resolves. */
     readonly brokerRegistry = signal<ReadonlyMap<string, BrokerRecord>>(new Map());
 
     /** Real broker_id -> symbol -> latest tick snapshot downloaded from
-     *  `rates.json` on page load. Empty until that request resolves. */
+     *  `rates.json` on page load, then kept live by rate-streamer's socket. */
     readonly ratesSnapshot = signal<RatesSnapshot>({});
 
     /** `brokerRegistry` and `ratesSnapshot` joined by broker id. */
@@ -81,30 +74,21 @@ export class MarketData implements OnDestroy {
         return SYMBOL_LIST.filter((s) => codes.has(s.code));
     });
 
-    /** Current mid price per symbol, and the baseline captured at seed for % change. */
-    private readonly mids = new Map<string, number>();
-    private readonly baselines = new Map<string, number>();
+    private readonly assetClassBySymbol = new Map(SYMBOL_LIST.map((s) => [s.code, s.assetClass]));
 
     /** Rolling spread history per `symbol:broker`, used to draw the row sparklines. */
     private readonly history = new Map<string, number[]>();
     private static readonly HISTORY_LEN = 24;
 
-    private wsSub?: Subscription;
     private ratesWsSub?: Subscription;
-    private simTimer?: ReturnType<typeof setInterval>;
     private started = false;
 
     constructor() {
-        // Seed a deterministic snapshot synchronously so SSR/prerender (and the
-        // first client render) show populated tables with matching markup.
-        if (SIMULATE) {
-            for (const symbol of SYMBOL_LIST) {
-                this.mids.set(symbol.code, symbol.basePrice);
-                this.baselines.set(symbol.code, symbol.basePrice);
-            }
-            this.seedHistory();
-            this.rebuildAll(false);
-        }
+        // Seed deterministic placeholder quotes synchronously so SSR/prerender
+        // (and the first client render) show populated tables with matching
+        // markup — real ticks take over per broker+symbol once they arrive.
+        this.seedHistory();
+        this.seedPlaceholderQuotes();
     }
 
     /** Deterministically fills the spread history so the sparklines render
@@ -136,6 +120,35 @@ export class MarketData implements OnDestroy {
         return (h / 1000) * Math.PI * 2;
     }
 
+    /** Builds the static placeholder quote for every symbol/stub-broker pair
+     *  from each symbol's reference `basePrice`. Computed once — real ticks
+     *  override these in `effectiveQuotes` as they arrive. */
+    private seedPlaceholderQuotes(): void {
+        const next = new Map<string, PriceQuote>();
+        for (const symbol of SYMBOL_LIST) {
+            for (const broker of BROKERS) {
+                const half = symbol.basePrice * broker.spreadFrac;
+                const bid = symbol.basePrice - half;
+                const ask = symbol.basePrice + half;
+                next.set(`${symbol.code}:${broker.id}`, {
+                    broker_id: broker.id,
+                    broker_name: broker.name,
+                    broker_rating: broker.rating,
+                    regulator: broker.regulator,
+                    affiliate_url: broker.affiliateUrl,
+                    symbol: symbol.code,
+                    asset_class: symbol.assetClass,
+                    bid,
+                    ask,
+                    spread: ask - bid,
+                    change_pct: 0,
+                    ts: Date.now(),
+                });
+            }
+        }
+        this.seedQuotes.set(next);
+    }
+
     /** Recent spread history for a broker+symbol, oldest first. Returns a fresh
      *  copy each call so consumers see a new reference when the chart updates. */
     spreadHistory(symbol: string, brokerId: string): number[] {
@@ -158,82 +171,9 @@ export class MarketData implements OnDestroy {
             error: (err) => console.error('[MarketData] getRates failed', err),
         });
         // Snapshot above seeds the initial view; rate-streamer then pushes
-        // per-symbol ticks continuously so spreads keep updating live.
+        // per-symbol ticks continuously over the one live socket so spreads
+        // keep updating in real time.
         this.ratesWsSub = this.ratesWs.connect().subscribe((msg) => this.upsertRate(msg));
-
-        if (SIMULATE) {
-            this.simTimer = setInterval(() => this.tick(), TICK_MS);
-            return;
-        }
-
-        // Real backend wiring (enabled in the backend phase):
-        this.api.getPrices().subscribe({
-            next: (initial) => {
-                for (const quote of initial) {
-                    this.upsert(quote);
-                }
-            },
-            error: (err) => console.error('[MarketData] getPrices failed', err),
-        });
-        this.wsSub = this.pricesWs.connect().subscribe((quote) => this.upsert(quote));
-    }
-
-    private tick(): void {
-        for (const symbol of SYMBOL_LIST) {
-            const mid = this.mids.get(symbol.code) ?? symbol.basePrice;
-            const drift = (Math.random() * 2 - 1) * mid * 0.0004;
-            this.mids.set(symbol.code, Math.max(mid + drift, symbol.basePrice * 0.5));
-        }
-        this.rebuildAll(true);
-    }
-
-    /** Rebuilds the full quote map from current mids. `jitter` adds per-broker
-     *  spread variation (browser only) so the board feels live. */
-    private rebuildAll(jitter: boolean): void {
-        const next = new Map<string, PriceQuote>();
-        for (const symbol of SYMBOL_LIST) {
-            const mid = this.mids.get(symbol.code) ?? symbol.basePrice;
-            const baseline = this.baselines.get(symbol.code) ?? symbol.basePrice;
-            const changePct = baseline ? ((mid - baseline) / baseline) * 100 : 0;
-            for (const broker of BROKERS) {
-                const frac = Math.max(
-                    broker.spreadFrac + (jitter ? (Math.random() * 2 - 1) * 0.000015 : 0),
-                    0.00001,
-                );
-                const half = mid * frac;
-                const bid = mid - half;
-                const ask = mid + half;
-                const spread = ask - bid;
-                const hist = this.history.get(`${symbol.code}:${broker.id}`);
-                if (hist) {
-                    hist.push(spread);
-                    if (hist.length > MarketData.HISTORY_LEN) {
-                        hist.shift();
-                    }
-                }
-                next.set(`${symbol.code}:${broker.id}`, {
-                    broker_id: broker.id,
-                    broker_name: broker.name,
-                    broker_rating: broker.rating,
-                    regulator: broker.regulator,
-                    affiliate_url: broker.affiliateUrl,
-                    symbol: symbol.code,
-                    asset_class: symbol.assetClass,
-                    bid,
-                    ask,
-                    spread,
-                    change_pct: changePct,
-                    ts: Date.now(),
-                });
-            }
-        }
-        this.quotes.set(next);
-    }
-
-    private upsert(quote: PriceQuote): void {
-        const next = new Map(this.quotes());
-        next.set(`${quote.symbol}:${quote.broker_id}`, quote);
-        this.quotes.set(next);
     }
 
     /** Merges one live tick from rate-streamer into `ratesSnapshot`, leaving
@@ -245,43 +185,66 @@ export class MarketData implements OnDestroy {
         this.ratesSnapshot.set(next);
     }
 
-    /** Top 3 brokers for the selected symbol, built from the real downloaded
-     *  broker + rates data (`brokerRates`) rather than the simulation. */
+    /** Builds a `PriceQuote` from one broker's real live tick record. */
+    private toRealQuote(
+        id: string,
+        broker: BrokerRecord | undefined,
+        symbol: string,
+        record: RateRecord,
+    ): PriceQuote {
+        const { a: ask, b: bid, f: digits, m: ts } = record.x.tick;
+        // Real ticks can arrive crossed (bid > ask) on a glitch; clamp so a bad
+        // tick can't sort to the top of a "tightest spread" ranking.
+        const spread = Math.max(0, ask - bid);
+        return {
+            broker_id: id,
+            broker_name: broker?.name ?? id,
+            affiliate_url: broker?.open_account_url ?? '#',
+            symbol,
+            asset_class: this.assetClassBySymbol.get(symbol) ?? '',
+            bid,
+            ask,
+            spread,
+            digits,
+            change_pct: 0,
+            ts,
+        };
+    }
+
+    /** Every real broker+symbol tick, keyed like `seedQuotes` (`symbol:brokerId`). */
+    private readonly realQuotes = computed<ReadonlyMap<string, PriceQuote>>(() => {
+        const next = new Map<string, PriceQuote>();
+        for (const { id, broker, rates } of this.brokerRates().values()) {
+            for (const [symbol, record] of Object.entries(rates)) {
+                next.set(`${symbol}:${id}`, this.toRealQuote(id, broker, symbol, record));
+            }
+        }
+        return next;
+    });
+
+    /** Placeholder quotes, overridden per broker+symbol by real ticks once
+     *  they arrive. Backs every live-looking table/ticker in the app. */
+    readonly effectiveQuotes = computed<ReadonlyMap<string, PriceQuote>>(() => {
+        const merged = new Map(this.seedQuotes());
+        for (const [key, quote] of this.realQuotes()) {
+            merged.set(key, quote);
+        }
+        return merged;
+    });
+
+    /** Top 3 brokers for the selected symbol, from real data only (no placeholders). */
     readonly rankingForSelected = computed<PriceQuote[]>(() => {
         const symbol = this.selectedSymbol();
-        const assetClass = SYMBOL_LIST.find((s) => s.code === symbol)?.assetClass ?? '';
-        const rows: PriceQuote[] = [];
-        for (const { id, broker, rates } of this.brokerRates().values()) {
-            const record = rates[symbol];
-            if (!record) {
-                continue;
-            }
-            const { a: ask, b: bid, m: ts } = record.x.tick;
-            // Real ticks can arrive crossed (bid > ask) on a glitch; clamp so a bad
-            // tick can't sort to the top of a "tightest spread" ranking.
-            const spread = Math.max(0, ask - bid);
-            rows.push({
-                broker_id: id,
-                broker_name: broker?.name ?? id,
-                affiliate_url: broker?.open_account_url ?? '#',
-                symbol,
-                asset_class: assetClass,
-                bid,
-                ask,
-                spread,
-                change_pct: 0,
-                ts,
-            });
-        }
+        const rows = Array.from(this.realQuotes().values()).filter((q) => q.symbol === symbol);
         return rows.sort((a, b) => a.spread - b.spread).slice(0, 3);
     });
 
-    /** Every live quote (one per broker+symbol that has reported). */
-    readonly allQuotes = computed<PriceQuote[]>(() => Array.from(this.quotes().values()));
+    /** Every quote (placeholder or real) — one per broker+symbol. */
+    readonly allQuotes = computed<PriceQuote[]>(() => Array.from(this.effectiveQuotes().values()));
 
     readonly bestPerSymbol = computed<ReadonlyMap<string, PriceQuote>>(() => {
         const best = new Map<string, PriceQuote>();
-        for (const quote of this.quotes().values()) {
+        for (const quote of this.effectiveQuotes().values()) {
             const current = best.get(quote.symbol);
             if (!current || quote.spread < current.spread) {
                 best.set(quote.symbol, quote);
@@ -293,7 +256,7 @@ export class MarketData implements OnDestroy {
     readonly marketsByClass = computed<MarketGroup[]>(() => {
         const brokerId = this.selectedBroker();
         const best = this.bestPerSymbol();
-        const quotes = this.quotes();
+        const quotes = this.effectiveQuotes();
         const pick = (code: string) =>
             brokerId === 'best' ? best.get(code) : quotes.get(`${code}:${brokerId}`);
         return ASSET_CLASS_ORDER.map((assetClass) => ({
@@ -306,10 +269,6 @@ export class MarketData implements OnDestroy {
     });
 
     ngOnDestroy(): void {
-        this.wsSub?.unsubscribe();
         this.ratesWsSub?.unsubscribe();
-        if (this.simTimer) {
-            clearInterval(this.simTimer);
-        }
     }
 }

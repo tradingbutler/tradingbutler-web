@@ -94,7 +94,7 @@
                                               ? '▼'
                                               : '▪'
                                     }}</span>
-                                    {{ quote.ask | number: digitsFor(quote.symbol) }}
+                                    {{ quote.ask | number: digitsFor(quote.symbol, quote.digits) }}
                                 </span>
                             </td>
                             <td class="ranking__col-num" data-label="Sell">
@@ -110,11 +110,11 @@
                                               ? '▼'
                                               : '▪'
                                     }}</span>
-                                    {{ quote.bid | number: digitsFor(quote.symbol) }}
+                                    {{ quote.bid | number: digitsFor(quote.symbol, quote.digits) }}
                                 </span>
                             </td>
                             <td class="ranking__col-num ranking__spread" data-label="Spread">
-                                {{ quote.spread | number: digitsFor(quote.symbol) }}
+                                {{ quote.spread | number: digitsFor(quote.symbol, quote.digits) }}
                             </td>
                             <td class="ranking__col-action">
                                 <a

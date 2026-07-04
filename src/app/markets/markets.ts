@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { BROKERS } from '../core/brokers';
 import { PriceQuote } from '../core/price-quote';
 import { MarketData } from '../core/market-data';
@@ -14,7 +14,12 @@ import { SymbolIcon } from '../shared/symbol-icon';
 })
 export class Markets {
     protected readonly marketData = inject(MarketData);
-    protected readonly brokers = BROKERS;
+    /** Real, self-registered brokers once loaded; the stub roster (`BROKERS`)
+     *  only fills the selector before that data has arrived. */
+    protected readonly brokers = computed(() => {
+        const registry = this.marketData.brokerRegistry();
+        return registry.size > 0 ? Array.from(registry.values()) : BROKERS;
+    });
     protected readonly digitsFor = digitsFor;
 
     protected mid(quote: PriceQuote): number {

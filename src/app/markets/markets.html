@@ -15,7 +15,7 @@
                     <option value="best" [selected]="marketData.selectedBroker() === 'best'">
                         Best available
                     </option>
-                    @for (broker of brokers; track broker.id) {
+                    @for (broker of brokers(); track broker.id) {
                         <option
                             [value]="broker.id"
                             [selected]="broker.id === marketData.selectedBroker()"
@@ -56,7 +56,10 @@
                                 </td>
                                 @if (row.quote) {
                                     <td class="markets__col-num">
-                                        {{ mid(row.quote) | number: digitsFor(row.symbol.code) }}
+                                        {{
+                                            mid(row.quote)
+                                                | number: digitsFor(row.symbol.code, row.quote.digits)
+                                        }}
                                     </td>
                                     <td
                                         class="markets__col-num"
@@ -78,7 +81,10 @@
                                         }}{{ row.quote.change_pct | number: '1.2-2' }}%
                                     </td>
                                     <td class="markets__col-num markets__spread">
-                                        {{ row.quote.spread | number: digitsFor(row.symbol.code) }}
+                                        {{
+                                            row.quote.spread
+                                                | number: digitsFor(row.symbol.code, row.quote.digits)
+                                        }}
                                     </td>
                                 } @else {
                                     <td class="markets__col-num markets__muted">—</td>

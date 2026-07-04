@@ -9,6 +9,7 @@ interface TickerItem {
     symbol: string;
     code: string;
     spread: number;
+    digits?: number;
     changePct: number;
 }
 
@@ -35,6 +36,7 @@ export class Ticker implements OnInit {
                 symbol: SYMBOL_LABEL.get(q.symbol) ?? q.symbol,
                 code: q.symbol,
                 spread: q.spread,
+                digits: q.digits,
                 changePct: q.change_pct,
             }))
             .sort((a, b) => a.key.localeCompare(b.key));

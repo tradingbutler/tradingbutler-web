@@ -44,7 +44,7 @@
                             </span>
                             <span class="hero-rank__spread tb-num">
                                 <span class="hero-rank__spread-num">{{
-                                    quote.spread | number: digitsFor(quote.symbol)
+                                    quote.spread | number: digitsFor(quote.symbol, quote.digits)
                                 }}</span>
                                 <span class="hero-rank__spread-label">spread</span>
                             </span>

@@ -34,6 +34,7 @@ export class RatesWs implements OnDestroy {
         socket.onopen = () => console.log('[RatesWs] connected', this.endpoint);
 
         socket.onmessage = async (event) => {
+            console.log('[RatesWs] message event arrived');
             try {
                 const text: string =
                     event.data instanceof Blob ? await event.data.text() : String(event.data);

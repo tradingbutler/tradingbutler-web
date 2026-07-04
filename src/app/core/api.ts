@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PriceQuote } from './price-quote';
 import { BrokerRecord } from './broker-registry';
 import { RatesSnapshot } from './rate-registry';
 
@@ -10,10 +9,6 @@ import { RatesSnapshot } from './rate-registry';
 })
 export class Api {
     constructor(private readonly http: HttpClient) {}
-
-    getPrices(): Observable<PriceQuote[]> {
-        return this.http.get<PriceQuote[]>('/api/prices');
-    }
 
     /** Fetches the broker registry snapshot written by json-writer, served as a
      *  static asset at the site root (`web/public/brokers.json`). */

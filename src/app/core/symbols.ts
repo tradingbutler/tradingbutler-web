@@ -14,7 +14,7 @@ export interface SymbolMeta {
     code: string;
     label: string;
     assetClass: AssetClass;
-    /** Reference price used to seed the UI simulation. */
+    /** Reference price used to seed placeholder quotes before real ticks arrive. */
     basePrice: number;
     /** Decimal places used to display this instrument's price and spread. */
     decimals: number;
@@ -25,8 +25,8 @@ export interface SymbolMeta {
 /**
  * Mirrors the hardcoded v1 roster in api/crates/core/src/lib.rs::SYMBOLS.
  * Keeps the dropdown and markets-table grouping populated even before any
- * live ticks have arrived for a given symbol. `basePrice` seeds the
- * client-side simulation (used while there is no backend feed).
+ * live ticks have arrived for a given symbol. `basePrice` seeds the static
+ * placeholder quotes shown until a real broker tick replaces them.
  */
 export const SYMBOL_LIST: SymbolMeta[] = [
     { code: 'EURUSD', label: 'EUR/USD', assetClass: 'Majors', basePrice: 1.085, decimals: 5, icon: { short: '€', bg: 'linear-gradient(135deg, #4a73d4, #2b4f9e)', fg: '#fff' } },
@@ -54,8 +54,11 @@ export const ASSET_CLASS_ORDER: AssetClass[] = ['Majors', 'Metals', 'Crypto', 'E
 
 const DECIMALS = new Map(SYMBOL_LIST.map((s) => [s.code, s.decimals]));
 
-/** DecimalPipe digitsInfo string for a symbol, e.g. "1.5-5". Falls back to 2dp. */
-export function digitsFor(code: string): string {
-    const d = DECIMALS.get(code) ?? 2;
+/** DecimalPipe digitsInfo string for a symbol, e.g. "1.5-5". Prefers the
+ *  broker-reported live precision (`liveDigits`, from a tick's `f` field) over
+ *  the static per-symbol guess, since real brokers don't all quote at the same
+ *  precision. Falls back to 2dp when neither is known. */
+export function digitsFor(code: string, liveDigits?: number): string {
+    const d = liveDigits ?? DECIMALS.get(code) ?? 2;
     return `1.${d}-${d}`;
 }
