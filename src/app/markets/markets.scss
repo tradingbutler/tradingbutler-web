@@ -118,7 +118,7 @@
 
     th:nth-child(3),
     td:nth-child(3) {
-        width: 104px;
+        width: 140px;
     }
 
     th:nth-child(4),
@@ -128,7 +128,7 @@
 
     th:nth-child(5),
     td:nth-child(5) {
-        width: 96px;
+        width: 130px;
     }
 
     thead th {
@@ -170,6 +170,7 @@
 
 .markets__col-num {
     text-align: right;
+    font-variant-numeric: tabular-nums;
 }
 
 .markets__symbol {

@@ -116,6 +116,7 @@
         padding: 1rem 1.25rem;
         border-bottom: 1px solid var(--tb-border);
         vertical-align: middle;
+        overflow: hidden;
     }
 
     tbody tr:last-child td {
@@ -140,8 +141,10 @@
 }
 
 .ranking__col-num {
-    width: 104px;
+    width: 148px;
     text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 
 // Keep the "Spread" header aligned with its right-aligned numbers

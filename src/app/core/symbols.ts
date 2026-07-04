@@ -54,11 +54,17 @@ export const ASSET_CLASS_ORDER: AssetClass[] = ['Majors', 'Metals', 'Crypto', 'E
 
 const DECIMALS = new Map(SYMBOL_LIST.map((s) => [s.code, s.decimals]));
 
+/** No symbol in `SYMBOL_LIST` needs more than this many decimals. Caps a
+ *  broker's raw reported precision, which can otherwise run well past what's
+ *  meaningful for the price (e.g. 6dp on a crypto pair) and overflow table
+ *  columns sized for realistic values. */
+const MAX_DIGITS = 5;
+
 /** DecimalPipe digitsInfo string for a symbol, e.g. "1.5-5". Prefers the
  *  broker-reported live precision (`liveDigits`, from a tick's `f` field) over
  *  the static per-symbol guess, since real brokers don't all quote at the same
- *  precision. Falls back to 2dp when neither is known. */
+ *  precision — but caps it at `MAX_DIGITS`. Falls back to 2dp when neither is known. */
 export function digitsFor(code: string, liveDigits?: number): string {
-    const d = liveDigits ?? DECIMALS.get(code) ?? 2;
+    const d = Math.min(liveDigits ?? DECIMALS.get(code) ?? 2, MAX_DIGITS);
     return `1.${d}-${d}`;
 }
