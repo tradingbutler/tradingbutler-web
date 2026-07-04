@@ -324,12 +324,20 @@
         padding-top: 1.5rem;
     }
 
+    .hero__title {
+        font-size: 2.1rem;
+    }
+
     .hero__mascot {
         display: none;
     }
 }
 
 @media (max-width: 480px) {
+    .hero__title {
+        font-size: 1.7rem;
+    }
+
     .hero-rank__row {
         grid-template-columns: auto minmax(0, 1fr) auto;
         row-gap: 0.6rem;
