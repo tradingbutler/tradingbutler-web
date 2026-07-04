@@ -39,6 +39,7 @@ export class RatesWs implements OnDestroy {
                 const text: string =
                     event.data instanceof Blob ? await event.data.text() : String(event.data);
                 const msg = JSON.parse(text) as RateTickMessage;
+                console.log('[RatesWs] message event arrived', msg);
                 if (msg.type === 'tick' && msg.broker && msg.symbol && msg.data) {
                     this.ticks$.next(msg);
                 }
