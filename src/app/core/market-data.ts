@@ -207,11 +207,13 @@ export class MarketData implements OnDestroy {
         return merged;
     });
 
-    /** Top 3 brokers for the selected symbol, from real data only (no placeholders). */
+    /** All brokers for the selected symbol, tightest spread first, from real data only
+     *  (no placeholders). Consumers that only want a teaser (e.g. the hero widget)
+     *  slice this down themselves. */
     readonly rankingForSelected = computed<PriceQuote[]>(() => {
         const symbol = this.selectedSymbol();
         const rows = Array.from(this.realQuotes().values()).filter((q) => q.symbol === symbol);
-        return rows.sort((a, b) => a.spread - b.spread).slice(0, 3);
+        return rows.sort((a, b) => a.spread - b.spread);
     });
 
     /** Every quote (placeholder or real) — one per broker+symbol. */
