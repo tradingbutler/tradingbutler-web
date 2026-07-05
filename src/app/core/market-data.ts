@@ -3,7 +3,6 @@ import { Injectable, OnDestroy, PLATFORM_ID, computed, inject, signal } from '@a
 import { Subscription } from 'rxjs';
 import { Api } from './api';
 import { BrokerRecord } from './broker-registry';
-import { BROKERS } from './brokers';
 import { PriceQuote } from './price-quote';
 import { RateRecord, RatesSnapshot } from './rate-registry';
 import { RateTickMessage } from './rate-tick';
@@ -94,21 +93,7 @@ export class MarketData implements OnDestroy {
     /** Deterministically fills the spread history so the sparklines render
      *  populated on SSR/first paint without causing a hydration mismatch. */
     private seedHistory(): void {
-        for (const symbol of SYMBOL_LIST) {
-            const mid = symbol.basePrice;
-            for (const broker of BROKERS) {
-                const key = `${symbol.code}:${broker.id}`;
-                const base = mid * broker.spreadFrac * 2;
-                const phase = this.phaseFor(key);
-                const points: number[] = [];
-                for (let i = 0; i < MarketData.HISTORY_LEN; i++) {
-                    const wobble =
-                        1 + 0.16 * Math.sin(i * 0.6 + phase) + 0.06 * Math.sin(i * 1.7 + phase * 2);
-                    points.push(base * wobble);
-                }
-                this.history.set(key, points);
-            }
-        }
+        //
     }
 
     /** Stable per-key phase in [0, 2π) so each broker's seeded curve differs. */
@@ -126,25 +111,7 @@ export class MarketData implements OnDestroy {
     private seedPlaceholderQuotes(): void {
         const next = new Map<string, PriceQuote>();
         for (const symbol of SYMBOL_LIST) {
-            for (const broker of BROKERS) {
-                const half = symbol.basePrice * broker.spreadFrac;
-                const bid = symbol.basePrice - half;
-                const ask = symbol.basePrice + half;
-                next.set(`${symbol.code}:${broker.id}`, {
-                    broker_id: broker.id,
-                    broker_name: broker.name,
-                    broker_rating: broker.rating,
-                    regulator: broker.regulator,
-                    affiliate_url: broker.affiliateUrl,
-                    symbol: symbol.code,
-                    asset_class: symbol.assetClass,
-                    bid,
-                    ask,
-                    spread: ask - bid,
-                    change_pct: 0,
-                    ts: Date.now(),
-                });
-            }
+            //
         }
         this.seedQuotes.set(next);
     }

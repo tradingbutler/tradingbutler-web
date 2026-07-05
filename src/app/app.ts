@@ -21,7 +21,6 @@ import { Trust } from './trust/trust';
         BrokerRanking,
         Trust,
         Features,
-        Markets,
         MarketClock,
         FearGreed,
         Faq,

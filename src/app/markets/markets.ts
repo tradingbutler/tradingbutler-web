@@ -1,6 +1,5 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
-import { BROKERS } from '../core/brokers';
 import { PriceQuote } from '../core/price-quote';
 import { MarketData } from '../core/market-data';
 import { digitsFor } from '../core/symbols';
@@ -18,7 +17,7 @@ export class Markets {
      *  only fills the selector before that data has arrived. */
     protected readonly brokers = computed(() => {
         const registry = this.marketData.brokerRegistry();
-        return registry.size > 0 ? Array.from(registry.values()) : BROKERS;
+        return registry.size > 0 ? Array.from(registry.values()) : [];
     });
     protected readonly digitsFor = digitsFor;
 
