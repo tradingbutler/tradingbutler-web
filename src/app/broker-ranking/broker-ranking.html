@@ -14,156 +14,122 @@
         </div>
 
         <div class="ranking__table-wrap">
-            @if (marketData.allForSelected().length === 0) {
+            @if (marketData.rankingForSelected().length === 0) {
                 <p class="ranking__empty">Waiting for live prices…</p>
             } @else {
-                <table class="ranking__table tb-num">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="ranking__col-rank">Rank</th>
-                            <th scope="col" class="ranking__col-broker">Broker</th>
-                            <th scope="col" class="ranking__col-graph"><!--History--></th>
-                            <th scope="col" class="ranking__col-num ranking__col-num--head">
-                                Buy
-                            </th>
-                            <th scope="col" class="ranking__col-num ranking__col-num--head">
-                                Sell
-                            </th>
-                            <th scope="col" class="ranking__col-num ranking__col-num--head">
-                                Spread
-                            </th>
-                            <th scope="col" class="ranking__col-action"></th>
+            <table class="ranking__table tb-num">
+                <thead>
+                    <tr>
+                        <th scope="col" class="ranking__col-rank">Rank</th>
+                        <th scope="col" class="ranking__col-broker">Broker</th>
+                        <th scope="col" class="ranking__col-graph"><!--History--></th>
+                        <th scope="col" class="ranking__col-num ranking__col-num--head">Buy</th>
+                        <th scope="col" class="ranking__col-num ranking__col-num--head">Sell</th>
+                        <th scope="col" class="ranking__col-num ranking__col-num--head">Spread</th>
+                        <th scope="col" class="ranking__col-action"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (
+                        quote of marketData.rankingForSelected();
+                        track quote.broker_id;
+                        let i = $index
+                    ) {
+                        <tr [class.ranking__row--top]="i === 0">
+                            <td>
+                                <span
+                                    class="ranking__rank"
+                                    [class.ranking__rank--top]="i === 0"
+                                    [class.ranking__rank--silver]="i === 1"
+                                    [class.ranking__rank--bronze]="i === 2"
+                                    >{{ i + 1 }}</span
+                                >
+                            </td>
+                            <td class="ranking__broker">
+                                <span class="ranking__broker-row">
+                                    <span class="ranking__broker-name">{{
+                                        quote.broker_name
+                                    }}</span>
+                                    @if (i === 0) {
+                                        <span class="ranking__badge">Best spread</span>
+                                    }
+                                </span>
+                                <span class="ranking__broker-sub">
+                                    @if (quote.broker_rating; as rating) {
+                                        <span
+                                            class="ranking__stars"
+                                            [attr.aria-label]="rating + ' out of 5 stars'"
+                                        >
+                                            @for (_ of stars(rating).filled; track $index) {
+                                                <span>★</span>
+                                            }
+                                            @for (_ of stars(rating).empty; track $index) {
+                                                <span class="ranking__star--empty">★</span>
+                                            }
+                                        </span>
+                                        <span class="ranking__rating-num">{{ rating }}</span>
+                                    }
+                                    @if (quote.regulator) {
+                                        <span class="ranking__reg"
+                                            >· Regulated · {{ quote.regulator }}</span
+                                        >
+                                    }
+                                </span>
+                            </td>
+                            <td class="ranking__col-graph" data-label="History">
+                                <app-spread-history
+                                    [data]="marketData.spreadHistory(quote.symbol, quote.broker_id)"
+                                />
+                            </td>
+                            <td class="ranking__col-num" data-label="Buy">
+                                <span
+                                    class="ranking__quote"
+                                    [class.ranking__quote--up]="quote.change_pct > 0.01"
+                                    [class.ranking__quote--down]="quote.change_pct < -0.01"
+                                >
+                                    <span class="ranking__arrow" aria-hidden="true">{{
+                                        quote.change_pct > 0.01
+                                            ? '▲'
+                                            : quote.change_pct < -0.01
+                                              ? '▼'
+                                              : '▪'
+                                    }}</span>
+                                    {{ quote.ask | number: digitsFor(quote.symbol, quote.digits) }}
+                                </span>
+                            </td>
+                            <td class="ranking__col-num" data-label="Sell">
+                                <span
+                                    class="ranking__quote"
+                                    [class.ranking__quote--up]="quote.change_pct > 0.01"
+                                    [class.ranking__quote--down]="quote.change_pct < -0.01"
+                                >
+                                    <span class="ranking__arrow" aria-hidden="true">{{
+                                        quote.change_pct > 0.01
+                                            ? '▲'
+                                            : quote.change_pct < -0.01
+                                              ? '▼'
+                                              : '▪'
+                                    }}</span>
+                                    {{ quote.bid | number: digitsFor(quote.symbol, quote.digits) }}
+                                </span>
+                            </td>
+                            <td class="ranking__col-num ranking__spread" data-label="Spread">
+                                {{ quote.spread | number: digitsFor(quote.symbol, quote.digits) }}
+                            </td>
+                            <td class="ranking__col-action">
+                                <a
+                                    class="ranking__cta"
+                                    [href]="quote.affiliate_url"
+                                    target="_blank"
+                                    rel="noopener sponsored"
+                                >
+                                    Open account
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @for (
-                            quote of marketData.allForSelected();
-                            track quote.broker_id;
-                            let i = $index
-                        ) {
-                            <tr [class.ranking__row--top]="i === 0">
-                                <td>
-                                    <span
-                                        class="ranking__rank"
-                                        [class.ranking__rank--top]="i === 0"
-                                        [class.ranking__rank--silver]="i === 1"
-                                        [class.ranking__rank--bronze]="i === 2"
-                                        >{{ i + 1 }}</span
-                                    >
-                                </td>
-                                <td class="ranking__broker">
-                                    <span class="ranking__broker-row">
-                                        <span class="ranking__broker-name">{{
-                                            quote.broker_name
-                                        }}</span>
-                                        @if (i === 0) {
-                                            <span class="ranking__badge">Best spread</span>
-                                        }
-                                    </span>
-                                    <span class="ranking__broker-sub">
-                                        @if (quote.broker_rating; as rating) {
-                                            <span
-                                                class="ranking__stars"
-                                                [attr.aria-label]="rating + ' out of 5 stars'"
-                                            >
-                                                @for (
-                                                    _ of stars(rating).filled;
-                                                    track $index
-                                                ) {
-                                                    <span>★</span>
-                                                }
-                                                @for (
-                                                    _ of stars(rating).empty;
-                                                    track $index
-                                                ) {
-                                                    <span class="ranking__star--empty"
-                                                        >★</span
-                                                    >
-                                                }
-                                            </span>
-                                            <span class="ranking__rating-num">{{
-                                                rating
-                                            }}</span>
-                                        }
-                                        @if (quote.regulator) {
-                                            <span class="ranking__reg"
-                                                >· Regulated · {{ quote.regulator }}</span
-                                            >
-                                        }
-                                    </span>
-                                </td>
-                                <td class="ranking__col-graph" data-label="History">
-                                    <app-spread-history
-                                        [data]="
-                                            marketData.spreadHistory(
-                                                quote.symbol,
-                                                quote.broker_id
-                                            )
-                                        "
-                                    />
-                                </td>
-                                <td class="ranking__col-num" data-label="Buy">
-                                    <span
-                                        class="ranking__quote"
-                                        [class.ranking__quote--up]="quote.change_pct > 0.01"
-                                        [class.ranking__quote--down]="
-                                            quote.change_pct < -0.01
-                                        "
-                                    >
-                                        <span class="ranking__arrow" aria-hidden="true">{{
-                                            quote.change_pct > 0.01
-                                                ? '▲'
-                                                : quote.change_pct < -0.01
-                                                  ? '▼'
-                                                  : '▪'
-                                        }}</span>
-                                        {{
-                                            quote.ask
-                                                | number: digitsFor(quote.symbol, quote.digits)
-                                        }}
-                                    </span>
-                                </td>
-                                <td class="ranking__col-num" data-label="Sell">
-                                    <span
-                                        class="ranking__quote"
-                                        [class.ranking__quote--up]="quote.change_pct > 0.01"
-                                        [class.ranking__quote--down]="
-                                            quote.change_pct < -0.01
-                                        "
-                                    >
-                                        <span class="ranking__arrow" aria-hidden="true">{{
-                                            quote.change_pct > 0.01
-                                                ? '▲'
-                                                : quote.change_pct < -0.01
-                                                  ? '▼'
-                                                  : '▪'
-                                        }}</span>
-                                        {{
-                                            quote.bid
-                                                | number: digitsFor(quote.symbol, quote.digits)
-                                        }}
-                                    </span>
-                                </td>
-                                <td class="ranking__col-num ranking__spread" data-label="Spread">
-                                    {{
-                                        quote.spread
-                                            | number: digitsFor(quote.symbol, quote.digits)
-                                    }}
-                                </td>
-                                <td class="ranking__col-action">
-                                    <a
-                                        class="ranking__cta"
-                                        [href]="quote.affiliate_url"
-                                        target="_blank"
-                                        rel="noopener sponsored"
-                                    >
-                                        Open account
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                    }
+                </tbody>
+            </table>
             }
         </div>
     </div>

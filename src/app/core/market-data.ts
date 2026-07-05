@@ -250,16 +250,6 @@ export class MarketData implements OnDestroy {
     /** Every quote (placeholder or real) — one per broker+symbol. */
     readonly allQuotes = computed<PriceQuote[]>(() => Array.from(this.effectiveQuotes().values()));
 
-    /** Every broker available for the selected symbol (placeholder or real),
-     *  tightest spread first — backs the "all brokers" table alongside the
-     *  top-3 `rankingForSelected` table. */
-    readonly allForSelected = computed<PriceQuote[]>(() => {
-        const symbol = this.selectedSymbol();
-        return this.allQuotes()
-            .filter((q) => q.symbol === symbol)
-            .sort((a, b) => a.spread - b.spread);
-    });
-
     readonly bestPerSymbol = computed<ReadonlyMap<string, PriceQuote>>(() => {
         const best = new Map<string, PriceQuote>();
         for (const quote of this.effectiveQuotes().values()) {
