@@ -1,4 +1,4 @@
-export type AssetClass = 'Majors' | 'Metals' | 'Crypto' | 'Energy' | 'Indices';
+export type AssetClass = 'Majors' | 'Metals' | 'Crypto' | 'Energy' | 'Indices' | 'Stocks';
 
 /** Small round badge shown next to a symbol (its "image"). */
 export interface SymbolIcon {
@@ -32,8 +32,6 @@ export const SYMBOL_LIST: SymbolMeta[] = [
     { code: 'EURUSD', label: 'EUR/USD', assetClass: 'Majors', basePrice: 1.085, decimals: 5, icon: { short: '€', bg: 'linear-gradient(135deg, #4a73d4, #2b4f9e)', fg: '#fff' } },
     { code: 'GBPUSD', label: 'GBP/USD', assetClass: 'Majors', basePrice: 1.27, decimals: 5, icon: { short: '£', bg: 'linear-gradient(135deg, #6b5fc7, #3f3a8f)', fg: '#fff' } },
     { code: 'USDJPY', label: 'USD/JPY', assetClass: 'Majors', basePrice: 157.4, decimals: 3, icon: { short: '¥', bg: 'linear-gradient(135deg, #d65a5a, #a8322f)', fg: '#fff' } },
-    { code: 'AUDUSD', label: 'AUD/USD', assetClass: 'Majors', basePrice: 0.665, decimals: 5, icon: { short: 'A$', bg: 'linear-gradient(135deg, #2faa6a, #1c7048)', fg: '#fff' } },
-    { code: 'USDCAD', label: 'USD/CAD', assetClass: 'Majors', basePrice: 1.37, decimals: 5, icon: { short: 'C$', bg: 'linear-gradient(135deg, #e07a5a, #b34a2f)', fg: '#fff' } },
     { code: 'XAUUSD', label: 'XAU/USD', assetClass: 'Metals', basePrice: 2400, decimals: 2, icon: { short: 'Au', bg: 'linear-gradient(135deg, #f4d27c, #cf9a2c)', fg: '#2a1c02' } },
     { code: 'XAGUSD', label: 'XAG/USD', assetClass: 'Metals', basePrice: 29.5, decimals: 3, icon: { short: 'Ag', bg: 'linear-gradient(135deg, #e4e8f0, #b6bece)', fg: '#1a1d23' } },
     { code: 'BTCUSD', label: 'BTC/USD', assetClass: 'Crypto', basePrice: 67000, decimals: 1, icon: { short: '₿', bg: 'linear-gradient(135deg, #f9a83a, #e8830f)', fg: '#fff' } },
@@ -41,6 +39,9 @@ export const SYMBOL_LIST: SymbolMeta[] = [
     { code: 'WTIUSD', label: 'WTI/USD', assetClass: 'Energy', basePrice: 78.5, decimals: 2, icon: { short: 'WTI', bg: 'linear-gradient(135deg, #2b2f36, #14171b)', fg: '#e0a93b' } },
     { code: 'SPX500', label: 'SPX500', assetClass: 'Indices', basePrice: 5430, decimals: 1, icon: { short: 'SPX', bg: 'linear-gradient(135deg, #3f7fb5, #2a5a86)', fg: '#fff' } },
     { code: 'NAS100', label: 'NAS100', assetClass: 'Indices', basePrice: 19500, decimals: 1, icon: { short: 'NDX', bg: 'linear-gradient(135deg, #5566c4, #343f8a)', fg: '#fff' } },
+    { code: 'TSLA', label: 'TSLA', assetClass: 'Stocks', basePrice: 250, decimals: 2, icon: { short: 'TSL', bg: 'linear-gradient(135deg, #e31937, #a10f26)', fg: '#fff' } },
+    { code: 'AAPL', label: 'AAPL', assetClass: 'Stocks', basePrice: 230, decimals: 2, icon: { short: 'AAP', bg: 'linear-gradient(135deg, #8e8e93, #3a3a3c)', fg: '#fff' } },
+    { code: 'NVDA', label: 'NVDA', assetClass: 'Stocks', basePrice: 135, decimals: 2, icon: { short: 'NVD', bg: 'linear-gradient(135deg, #76b900, #4d7a00)', fg: '#fff' } },
 ];
 
 const ICON_BY_CODE = new Map(SYMBOL_LIST.map((s) => [s.code, s.icon]));
@@ -50,7 +51,14 @@ export function iconFor(code: string): SymbolIcon | undefined {
     return ICON_BY_CODE.get(code);
 }
 
-export const ASSET_CLASS_ORDER: AssetClass[] = ['Majors', 'Metals', 'Crypto', 'Energy', 'Indices'];
+export const ASSET_CLASS_ORDER: AssetClass[] = [
+    'Majors',
+    'Metals',
+    'Crypto',
+    'Energy',
+    'Indices',
+    'Stocks',
+];
 
 const DECIMALS = new Map(SYMBOL_LIST.map((s) => [s.code, s.decimals]));
 
