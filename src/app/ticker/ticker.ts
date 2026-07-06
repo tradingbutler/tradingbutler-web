@@ -1,7 +1,17 @@
-import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { DecimalPipe, isPlatformBrowser } from '@angular/common';
+import {
+    Component,
+    OnInit,
+    PLATFORM_ID,
+    computed,
+    effect,
+    inject,
+    signal,
+} from '@angular/core';
 import { MarketData } from '../core/market-data';
 import { SYMBOL_LIST, digitsFor } from '../core/symbols';
+
+const TICKER_SIZE = 16;
 
 interface TickerItem {
     key: string;
@@ -23,13 +33,21 @@ const SYMBOL_LABEL = new Map(SYMBOL_LIST.map((s) => [s.code, s.label]));
 })
 export class Ticker implements OnInit {
     private readonly marketData = inject(MarketData);
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-    /** Broker spreads in a stable, deterministic "random" order. Deterministic so
-     *  the SSR markup and the first client render match (no hydration mismatch),
-     *  and so the marquee doesn't reshuffle every time a price updates. */
+    /** Randomly chosen broker:symbol keys, picked once (client-only) as soon as
+     *  quotes are available. Stays null on the server so SSR renders nothing,
+     *  matching first client paint before the pick happens. */
+    private readonly selectedKeys = signal<Set<string> | null>(null);
+
+    /** The selected broker/symbol pairs, with values kept live via the websocket
+     *  feed — only which pairs are shown is random, not their current price. */
     protected readonly items = computed<TickerItem[]>(() => {
+        const keys = this.selectedKeys();
+        if (!keys) return [];
         const quotes = this.marketData.allQuotes();
-        const entries = quotes
+        return quotes
+            .filter((q) => keys.has(`${q.broker_id}:${q.symbol}`))
             .map((q) => ({
                 key: `${q.broker_id}:${q.symbol}`,
                 broker: q.broker_name,
@@ -40,27 +58,32 @@ export class Ticker implements OnInit {
                 changePct: q.change_pct,
             }))
             .sort((a, b) => a.key.localeCompare(b.key));
-        return seededShuffle(entries);
     });
 
     protected readonly digitsFor = digitsFor;
+
+    constructor() {
+        effect(() => {
+            if (!this.isBrowser || this.selectedKeys() !== null) return;
+            const quotes = this.marketData.allQuotes();
+            if (quotes.length === 0) return;
+            const keys = quotes.map((q) => `${q.broker_id}:${q.symbol}`);
+            this.selectedKeys.set(new Set(randomSample(keys, TICKER_SIZE)));
+        });
+    }
 
     ngOnInit(): void {
         this.marketData.start();
     }
 }
 
-/** Fisher–Yates with a fixed-seed LCG — same permutation every call. */
-function seededShuffle<T>(input: T[]): T[] {
+/** Picks up to `size` random, distinct entries via a partial Fisher–Yates shuffle. */
+function randomSample<T>(input: T[], size: number): T[] {
     const arr = [...input];
-    let seed = 0x9e3779b9;
-    const rnd = () => {
-        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-        return seed / 0xffffffff;
-    };
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(rnd() * (i + 1));
+    const n = Math.min(size, arr.length);
+    for (let i = 0; i < n; i++) {
+        const j = i + Math.floor(Math.random() * (arr.length - i));
         [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-    return arr;
+    return arr.slice(0, n);
 }
