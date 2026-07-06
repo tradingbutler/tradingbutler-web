@@ -43,7 +43,7 @@
     color: var(--tb-text-muted);
 }
 
-.ticker__spread {
+.ticker__price {
     display: inline-block;
     min-width: 72px;
     text-align: right;
@@ -55,17 +55,17 @@
 }
 
 /* Direction coloring: green up, red down, gold unchanged */
-.ticker__item--up .ticker__spread,
+.ticker__item--up .ticker__price,
 .ticker__item--up .ticker__arrow {
     color: var(--tb-green);
 }
 
-.ticker__item--down .ticker__spread,
+.ticker__item--down .ticker__price,
 .ticker__item--down .ticker__arrow {
     color: var(--tb-red);
 }
 
-.ticker__item--flat .ticker__spread,
+.ticker__item--flat .ticker__price,
 .ticker__item--flat .ticker__arrow {
     color: var(--tb-accent);
 }

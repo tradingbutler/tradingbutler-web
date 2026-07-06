@@ -82,6 +82,15 @@ export class MarketData implements OnDestroy {
     private ratesWsSub?: Subscription;
     private started = false;
 
+    /** Previous bid per `brokerId:symbol`, used to derive `change_pct` on each
+     *  new tick — the feed itself carries no change/last-close reference. */
+    private readonly lastBid = new Map<string, number>();
+    /** Most recently derived `change_pct` per `brokerId:symbol`. Plain (non-signal)
+     *  map mutated synchronously in `upsertRate`, before `ratesSnapshot` is set —
+     *  so by the time `realQuotes` recomputes off that signal, values here are
+     *  already current. */
+    private readonly changePct = new Map<string, number>();
+
     constructor() {
         // Seed deterministic placeholder quotes synchronously so SSR/prerender
         // (and the first client render) show populated tables with matching
@@ -146,6 +155,14 @@ export class MarketData implements OnDestroy {
     /** Merges one live tick from rate-streamer into `ratesSnapshot`, leaving
      *  every other broker/symbol untouched. */
     private upsertRate(msg: RateTickMessage): void {
+        const key = `${msg.broker}:${msg.symbol}`;
+        const bid = msg.data.x.tick.b;
+        const prevBid = this.lastBid.get(key);
+        if (prevBid) {
+            this.changePct.set(key, ((bid - prevBid) / prevBid) * 100);
+        }
+        this.lastBid.set(key, bid);
+
         const snapshot = this.ratesSnapshot();
         const next: RatesSnapshot = { ...snapshot };
         next[msg.broker] = { ...snapshot[msg.broker], [msg.symbol]: msg.data };
@@ -181,7 +198,7 @@ export class MarketData implements OnDestroy {
             ask,
             spread,
             digits,
-            change_pct: 0,
+            change_pct: this.changePct.get(`${id}:${symbol}`) ?? 0,
             ts,
         };
     }

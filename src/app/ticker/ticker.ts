@@ -18,7 +18,7 @@ interface TickerItem {
     broker: string;
     symbol: string;
     code: string;
-    spread: number;
+    price: number;
     digits?: number;
     changePct: number;
 }
@@ -53,7 +53,7 @@ export class Ticker implements OnInit {
                 broker: q.broker_name,
                 symbol: SYMBOL_LABEL.get(q.symbol) ?? q.symbol,
                 code: q.symbol,
-                spread: q.spread,
+                price: q.bid,
                 digits: q.digits,
                 changePct: q.change_pct,
             }))

@@ -14,8 +14,8 @@
                         >
                             <span class="ticker__broker">{{ item.broker }}</span>
                             <span class="ticker__sym">{{ item.symbol }}</span>
-                            <span class="ticker__spread tb-num">{{
-                                item.spread | number: digitsFor(item.code, item.digits)
+                            <span class="ticker__price tb-num">{{
+                                item.price | number: digitsFor(item.code, item.digits)
                             }}</span>
                             <span class="ticker__arrow" aria-hidden="true">
                                 {{
