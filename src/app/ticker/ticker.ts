@@ -35,9 +35,10 @@ export class Ticker implements OnInit {
     private readonly marketData = inject(MarketData);
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-    /** Randomly chosen broker:symbol keys, picked once (client-only) as soon as
-     *  quotes are available. Stays null on the server so SSR renders nothing,
-     *  matching first client paint before the pick happens. */
+    /** Randomly chosen broker:symbol keys (client-only), topped up as new
+     *  broker/symbol pairs come online and pruned as they drop off — capped at
+     *  `TICKER_SIZE`. Stays null on the server so SSR renders nothing, matching
+     *  first client paint before any picks happen. */
     private readonly selectedKeys = signal<Set<string> | null>(null);
 
     /** The selected broker/symbol pairs, with values kept live via the websocket
@@ -64,17 +65,34 @@ export class Ticker implements OnInit {
 
     constructor() {
         effect(() => {
-            if (!this.isBrowser || this.selectedKeys() !== null) return;
+            if (!this.isBrowser) return;
             const quotes = this.marketData.allQuotes();
-            if (quotes.length === 0) return;
-            const keys = quotes.map((q) => `${q.broker_id}:${q.symbol}`);
-            this.selectedKeys.set(new Set(randomSample(keys, TICKER_SIZE)));
+            const available = new Set(quotes.map((q) => `${q.broker_id}:${q.symbol}`));
+            const current = this.selectedKeys();
+            const kept = new Set(current ? [...current].filter((k) => available.has(k)) : []);
+            if (kept.size < TICKER_SIZE) {
+                const candidates = [...available].filter((k) => !kept.has(k));
+                for (const key of randomSample(candidates, TICKER_SIZE - kept.size)) {
+                    kept.add(key);
+                }
+            }
+            if (!current || !sameKeys(kept, current)) {
+                this.selectedKeys.set(kept);
+            }
         });
     }
 
     ngOnInit(): void {
         this.marketData.start();
     }
+}
+
+function sameKeys(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
+    if (a.size !== b.size) return false;
+    for (const key of a) {
+        if (!b.has(key)) return false;
+    }
+    return true;
 }
 
 /** Picks up to `size` random, distinct entries via a partial Fisher–Yates shuffle. */
