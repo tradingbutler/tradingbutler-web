@@ -1,16 +1,14 @@
 @if (items().length > 0) {
-    <div class="ticker" aria-label="Live broker spreads">
+    <div class="ticker" aria-label="Live broker bid prices">
         <div class="ticker__track">
             @for (copy of [0, 1]; track copy) {
                 <div class="ticker__group" [attr.aria-hidden]="copy === 1 ? 'true' : null">
                     @for (item of items(); track item.key) {
                         <span
                             class="ticker__item"
-                            [class.ticker__item--up]="item.changePct > 0.01"
-                            [class.ticker__item--down]="item.changePct < -0.01"
-                            [class.ticker__item--flat]="
-                                item.changePct >= -0.01 && item.changePct <= 0.01
-                            "
+                            [class.ticker__item--up]="item.changePct > 0"
+                            [class.ticker__item--down]="item.changePct < 0"
+                            [class.ticker__item--flat]="item.changePct === 0"
                         >
                             <span class="ticker__broker">{{ item.broker }}</span>
                             <span class="ticker__sym">{{ item.symbol }}</span>
@@ -19,7 +17,7 @@
                             }}</span>
                             <span class="ticker__arrow" aria-hidden="true">
                                 {{
-                                    item.changePct > 0.01 ? '▲' : item.changePct < -0.01 ? '▼' : '▪'
+                                    item.changePct > 0 ? '▲' : item.changePct < 0 ? '▼' : '▪'
                                 }}
                             </span>
                         </span>
