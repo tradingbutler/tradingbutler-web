@@ -16,6 +16,12 @@
         <link rel="apple-touch-icon" href="apple-touch-icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <!-- Kick off the initial rates/brokers fetch as soon as the head is parsed,
+             in parallel with the JS bundle download — by the time Angular bootstraps
+             and MarketData.start() calls HttpClient, the response is already in
+             flight (or cached), so the first paint of live data lands sooner. -->
+        <link rel="preload" as="fetch" href="/rates.json" crossorigin="anonymous" />
+        <link rel="preload" as="fetch" href="/brokers.json" crossorigin="anonymous" />
         <link
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap"
             rel="stylesheet"
