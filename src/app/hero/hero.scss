@@ -224,6 +224,7 @@
     font-size: 0.98rem;
     white-space: nowrap;
     overflow: hidden;
+    text-transform: capitalize;
     text-overflow: ellipsis;
 }
 
@@ -336,7 +337,7 @@
 
 @media (max-width: 480px) {
     .hero__title {
-        font-size: 2.0rem;
+        font-size: 2rem;
     }
 
     .hero-rank__row {

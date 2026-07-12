@@ -36,6 +36,10 @@
 .markets__select-wrap {
     position: relative;
 
+    select {
+        text-transform: capitalize;
+    }
+
     &::after {
         content: '';
         position: absolute;
@@ -186,6 +190,7 @@
 
 .markets__broker {
     color: var(--tb-text-muted);
+    text-transform: capitalize;
 }
 
 .markets__spread {
