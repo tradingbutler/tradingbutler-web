@@ -1,0 +1,30 @@
+# TradingButler
+
+> TradingButler is a live broker spread-comparison site for forex, metals, crypto, energy and
+> indices. It streams real-time bid/ask/spread quotes from regulated brokers, ranks them by
+> tightest spread per instrument, and links out to open a trading account with the winning broker.
+
+TradingButler is a single-page site (https://tradingbuttler.com/) with no sub-routes; the
+sections below are anchors on that one page, not separate documents.
+
+## Content
+
+- [Live spread ranking](https://tradingbuttler.com/#brokers): per-symbol table ranking regulated
+  brokers by current spread, updated in under a second from live MT5 ticks (no polling/averages).
+- [Markets board](https://tradingbuttler.com/#markets): grouped view of all tracked instruments —
+  EUR/USD, GBP/USD, USD/JPY (Majors), XAU/USD, XAG/USD (Metals), BTC/USD, ETH/USD (Crypto),
+  WTI/USD (Energy), SPX500, NAS100 (Indices), TSLA, AAPL, NVDA (Stocks).
+- [FAQ](https://tradingbuttler.com/#faq): what a spread is, how spread data is sourced, how often
+  it updates, and how broker regulation is verified (FCA, ASIC, CySEC, FSCA).
+- [Live rates feed](https://tradingbuttler.com/rates.json): current tick snapshot, broker → symbol
+  → {bid, ask, spread}, refreshed roughly every 30s (JSON, machine-readable).
+- [Broker roster](https://tradingbuttler.com/brokers.json): registered brokers with id, name,
+  logo, and affiliate "open account" URL, refreshed roughly every 60s (JSON, machine-readable).
+
+## Notes
+
+- Spreads and rankings change continuously — treat any point-in-time answer about "the
+  tightest-spread broker for X" as a live value, not a stable fact.
+- TradingButler earns an affiliate commission when a visitor opens a broker account through the
+  site; this does not affect which spreads are shown or how brokers are ranked.
+- Every broker listed has been checked for regulation by a recognised authority before appearing.
