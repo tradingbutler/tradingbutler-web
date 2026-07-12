@@ -84,13 +84,13 @@
                             <td class="ranking__col-num" data-label="Buy">
                                 <span
                                     class="ranking__quote"
-                                    [class.ranking__quote--up]="quote.change_pct > 0.01"
-                                    [class.ranking__quote--down]="quote.change_pct < -0.01"
+                                    [class.ranking__quote--up]="quote.change_pct > 0"
+                                    [class.ranking__quote--down]="quote.change_pct < 0"
                                 >
                                     <span class="ranking__arrow" aria-hidden="true">{{
-                                        quote.change_pct > 0.01
+                                        quote.change_pct > 0
                                             ? '▲'
-                                            : quote.change_pct < -0.01
+                                            : quote.change_pct < 0
                                               ? '▼'
                                               : '▪'
                                     }}</span>
@@ -100,13 +100,13 @@
                             <td class="ranking__col-num" data-label="Sell">
                                 <span
                                     class="ranking__quote"
-                                    [class.ranking__quote--up]="quote.change_pct > 0.01"
-                                    [class.ranking__quote--down]="quote.change_pct < -0.01"
+                                    [class.ranking__quote--up]="quote.change_pct > 0"
+                                    [class.ranking__quote--down]="quote.change_pct < 0"
                                 >
                                     <span class="ranking__arrow" aria-hidden="true">{{
-                                        quote.change_pct > 0.01
+                                        quote.change_pct > 0
                                             ? '▲'
-                                            : quote.change_pct < -0.01
+                                            : quote.change_pct < 0
                                               ? '▼'
                                               : '▪'
                                     }}</span>

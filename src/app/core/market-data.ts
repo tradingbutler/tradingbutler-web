@@ -82,9 +82,11 @@ export class MarketData implements OnDestroy {
     private ratesWsSub?: Subscription;
     private started = false;
 
-    /** Previous bid per `brokerId:symbol`, used to derive `change_pct` on each
-     *  new tick — the feed itself carries no change/last-close reference. */
-    private readonly lastBid = new Map<string, number>();
+    /** Bid the first time this browser session saw each `brokerId:symbol` —
+     *  the reference point `change_pct` is measured against for the rest of
+     *  the session (not the previous tick, and not a shared server-side
+     *  daily open — the feed itself carries no such reference). */
+    private readonly firstSeenBid = new Map<string, number>();
     /** Most recently derived `change_pct` per `brokerId:symbol`. Plain (non-signal)
      *  map mutated synchronously in `upsertRate`, before `ratesSnapshot` is set —
      *  so by the time `realQuotes` recomputes off that signal, values here are
@@ -157,11 +159,12 @@ export class MarketData implements OnDestroy {
     private upsertRate(msg: RateTickMessage): void {
         const key = `${msg.broker}:${msg.symbol}`;
         const bid = msg.data.x.tick.b;
-        const prevBid = this.lastBid.get(key);
-        if (prevBid) {
-            this.changePct.set(key, ((bid - prevBid) / prevBid) * 100);
+        let firstBid = this.firstSeenBid.get(key);
+        if (firstBid === undefined) {
+            firstBid = bid;
+            this.firstSeenBid.set(key, bid);
         }
-        this.lastBid.set(key, bid);
+        this.changePct.set(key, ((bid - firstBid) / firstBid) * 100);
 
         const snapshot = this.ratesSnapshot();
         const next: RatesSnapshot = { ...snapshot };
