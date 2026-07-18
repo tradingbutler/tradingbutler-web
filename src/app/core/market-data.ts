@@ -3,6 +3,7 @@ import { Injectable, OnDestroy, PLATFORM_ID, computed, inject, signal } from '@a
 import { Subscription } from 'rxjs';
 import { Api } from './api';
 import { BrokerRecord } from './broker-registry';
+import { INITIAL_BROKERS, INITIAL_RATES } from './initial-data';
 import { PriceQuote } from './price-quote';
 import { RateRecord, RatesSnapshot } from './rate-registry';
 import { RateTickMessage } from './rate-tick';
@@ -36,18 +37,21 @@ export class MarketData implements OnDestroy {
     /** Broker shown in the live-markets board: 'best' = tightest per instrument, or a broker id. */
     readonly selectedBroker = signal<string>('best');
 
-    /** Deterministic placeholder quotes so SSR/first paint render populated
-     *  tables before `brokers.json`/`rates.json`/the live socket resolve.
-     *  `effectiveQuotes` overrides these per broker+symbol with real ticks. */
-    private readonly seedQuotes = signal<ReadonlyMap<string, PriceQuote>>(new Map());
+    private readonly initialBrokers = inject(INITIAL_BROKERS);
+    private readonly initialRates = inject(INITIAL_RATES);
 
-    /** Real broker metadata (name, logo, affiliate link) downloaded from
-     *  `brokers.json` on page load. Empty until that request resolves. */
-    readonly brokerRegistry = signal<ReadonlyMap<string, BrokerRecord>>(new Map());
+    /** Real broker metadata (name, logo, affiliate link). Seeded from the
+     *  SSR-preloaded `brokers.json` snapshot (see `initial-data.ts`) so
+     *  server and first client render already have real data; `start()`
+     *  refreshes it once the app is interactive. */
+    readonly brokerRegistry = signal<ReadonlyMap<string, BrokerRecord>>(
+        new Map(Object.entries(this.initialBrokers)),
+    );
 
-    /** Real broker_id -> symbol -> latest tick snapshot downloaded from
-     *  `rates.json` on page load, then kept live by rate-streamer's socket. */
-    readonly ratesSnapshot = signal<RatesSnapshot>({});
+    /** Real broker_id -> symbol -> latest tick snapshot. Seeded from the
+     *  SSR-preloaded `rates.json` snapshot, then kept live by
+     *  rate-streamer's socket once `start()` connects. */
+    readonly ratesSnapshot = signal<RatesSnapshot>(this.initialRates);
 
     /** `brokerRegistry` and `ratesSnapshot` joined by broker id. */
     readonly brokerRates = computed<ReadonlyMap<string, BrokerRates>>(() => {
@@ -92,40 +96,6 @@ export class MarketData implements OnDestroy {
      *  so by the time `realQuotes` recomputes off that signal, values here are
      *  already current. */
     private readonly changePct = new Map<string, number>();
-
-    constructor() {
-        // Seed deterministic placeholder quotes synchronously so SSR/prerender
-        // (and the first client render) show populated tables with matching
-        // markup — real ticks take over per broker+symbol once they arrive.
-        this.seedHistory();
-        this.seedPlaceholderQuotes();
-    }
-
-    /** Deterministically fills the spread history so the sparklines render
-     *  populated on SSR/first paint without causing a hydration mismatch. */
-    private seedHistory(): void {
-        //
-    }
-
-    /** Stable per-key phase in [0, 2π) so each broker's seeded curve differs. */
-    private phaseFor(key: string): number {
-        let h = 0;
-        for (let i = 0; i < key.length; i++) {
-            h = (h * 31 + key.charCodeAt(i)) % 1000;
-        }
-        return (h / 1000) * Math.PI * 2;
-    }
-
-    /** Builds the static placeholder quote for every symbol/stub-broker pair
-     *  from each symbol's reference `basePrice`. Computed once — real ticks
-     *  override these in `effectiveQuotes` as they arrive. */
-    private seedPlaceholderQuotes(): void {
-        const next = new Map<string, PriceQuote>();
-        for (const symbol of SYMBOL_LIST) {
-            //
-        }
-        this.seedQuotes.set(next);
-    }
 
     /** Recent spread history for a broker+symbol, oldest first. Returns a fresh
      *  copy each call so consumers see a new reference when the chart updates. */
@@ -206,7 +176,8 @@ export class MarketData implements OnDestroy {
         };
     }
 
-    /** Every real broker+symbol tick, keyed like `seedQuotes` (`symbol:brokerId`). */
+    /** Every broker+symbol tick, keyed `symbol:brokerId`. Seeded server-side
+     *  (see `brokerRegistry`/`ratesSnapshot`), then kept current by live ticks. */
     private readonly realQuotes = computed<ReadonlyMap<string, PriceQuote>>(() => {
         const next = new Map<string, PriceQuote>();
         for (const { id, broker, rates } of this.brokerRates().values()) {
@@ -217,31 +188,19 @@ export class MarketData implements OnDestroy {
         return next;
     });
 
-    /** Placeholder quotes, overridden per broker+symbol by real ticks once
-     *  they arrive. Backs every live-looking table/ticker in the app. */
-    readonly effectiveQuotes = computed<ReadonlyMap<string, PriceQuote>>(() => {
-        const merged = new Map(this.seedQuotes());
-        for (const [key, quote] of this.realQuotes()) {
-            merged.set(key, quote);
-        }
-        return merged;
-    });
-
-    /** All brokers for the selected symbol, tightest spread first, from real data only
-     *  (no placeholders). Consumers that only want a teaser (e.g. the hero widget)
-     *  slice this down themselves. */
+    /** All brokers for the selected symbol, tightest spread first. */
     readonly rankingForSelected = computed<PriceQuote[]>(() => {
         const symbol = this.selectedSymbol();
         const rows = Array.from(this.realQuotes().values()).filter((q) => q.symbol === symbol);
         return rows.sort((a, b) => a.spread - b.spread);
     });
 
-    /** Every quote (placeholder or real) — one per broker+symbol. */
-    readonly allQuotes = computed<PriceQuote[]>(() => Array.from(this.effectiveQuotes().values()));
+    /** Every quote — one per broker+symbol. */
+    readonly allQuotes = computed<PriceQuote[]>(() => Array.from(this.realQuotes().values()));
 
     readonly bestPerSymbol = computed<ReadonlyMap<string, PriceQuote>>(() => {
         const best = new Map<string, PriceQuote>();
-        for (const quote of this.effectiveQuotes().values()) {
+        for (const quote of this.realQuotes().values()) {
             const current = best.get(quote.symbol);
             if (!current || quote.spread < current.spread) {
                 best.set(quote.symbol, quote);
@@ -253,7 +212,7 @@ export class MarketData implements OnDestroy {
     readonly marketsByClass = computed<MarketGroup[]>(() => {
         const brokerId = this.selectedBroker();
         const best = this.bestPerSymbol();
-        const quotes = this.effectiveQuotes();
+        const quotes = this.realQuotes();
         const pick = (code: string) =>
             brokerId === 'best' ? best.get(code) : quotes.get(`${code}:${brokerId}`);
         return ASSET_CLASS_ORDER.map((assetClass) => ({
