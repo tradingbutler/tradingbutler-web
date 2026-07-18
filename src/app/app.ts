@@ -1,6 +1,13 @@
 import { Meta, Title } from '@angular/platform-browser';
 import { isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    PLATFORM_ID,
+    inject,
+    signal,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { BrokerRanking } from './broker-ranking/broker-ranking';
 import { Faq } from './faq/faq';
 import { FearGreed } from './fear-greed/fear-greed';
@@ -14,18 +21,9 @@ import { Trust } from './trust/trust';
 
 @Component({
     selector: 'app-root',
-    imports: [
-        Header,
-        Ticker,
-        Hero,
-        BrokerRanking,
-        Trust,
-        Features,
-        MarketClock,
-        FearGreed,
-        Faq,
-    ],
+    imports: [Header, Ticker, Hero, BrokerRanking, Trust, Features, MarketClock, FearGreed, Faq],
     templateUrl: './app.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './app.scss',
 })
 export class App implements OnInit {

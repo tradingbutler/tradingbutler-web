@@ -1,4 +1,11 @@
-import { Component, afterNextRender, computed, input, signal } from '@angular/core';
+import {
+    Component,
+    afterNextRender,
+    computed,
+    input,
+    signal,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 
 type Status = 'loading' | 'ready' | 'error';
 type Variant = 'crypto' | 'stocks';
@@ -47,6 +54,7 @@ function classify(v: number): string {
     selector: 'app-fear-greed',
     imports: [],
     templateUrl: './fear-greed.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './fear-greed.scss',
 })
 export class FearGreed {

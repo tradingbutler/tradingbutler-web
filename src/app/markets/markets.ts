@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { PriceQuote } from '../core/price-quote';
 import { MarketData } from '../core/market-data';
 import { digitsFor } from '../core/symbols';
@@ -9,6 +9,7 @@ import { SymbolIcon } from '../shared/symbol-icon';
     selector: 'app-markets',
     imports: [DecimalPipe, SymbolIcon],
     templateUrl: './markets.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './markets.scss',
 })
 export class Markets {

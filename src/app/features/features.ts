@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 interface Feature {
     icon: 'bolt' | 'shield' | 'chart' | 'award' | 'monitor' | 'support';
@@ -43,6 +43,7 @@ const FEATURES: Feature[] = [
     selector: 'app-features',
     imports: [],
     templateUrl: './features.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './features.scss',
 })
 export class Features {

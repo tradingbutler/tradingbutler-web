@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MarketData } from '../core/market-data';
 import { digitsFor } from '../core/symbols';
 import { SpreadHistory } from './spread-history';
@@ -9,6 +9,7 @@ import { SymbolSelect } from '../shared/symbol-select';
     selector: 'app-broker-ranking',
     imports: [DecimalPipe, SpreadHistory, SymbolSelect],
     templateUrl: './broker-ranking.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './broker-ranking.scss',
 })
 export class BrokerRanking {

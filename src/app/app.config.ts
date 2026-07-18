@@ -1,6 +1,10 @@
 import { inject, makeStateKey, ApplicationConfig, TransferState } from '@angular/core';
 import { provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+    provideClientHydration,
+    withEventReplay,
+    withNoIncrementalHydration,
+} from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { BrokerRecord } from './core/broker-registry';
 import { INITIAL_BROKERS, INITIAL_RATES } from './core/initial-data';
@@ -14,7 +18,7 @@ const INITIAL_RATES_KEY = makeStateKey<RatesSnapshot>('INITIAL_RATES');
 export const appConfig: ApplicationConfig = {
     providers: [
         provideBrowserGlobalErrorListeners(),
-        provideClientHydration(withEventReplay()),
+        provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
         provideHttpClient(withFetch()),
         {
             provide: RATES_ENDPOINT,

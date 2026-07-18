@@ -1,4 +1,4 @@
-import { Component, afterNextRender, signal } from '@angular/core';
+import { Component, afterNextRender, signal, ChangeDetectionStrategy } from '@angular/core';
 
 interface SessionDef {
     name: string;
@@ -173,6 +173,7 @@ function nextChange(now: Date, s: SessionDef): string {
     selector: 'app-market-clock',
     imports: [],
     templateUrl: './market-clock.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './market-clock.scss',
 })
 export class MarketClock {

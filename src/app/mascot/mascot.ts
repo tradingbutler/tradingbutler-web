@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 
 interface MascotState {
     image: string;
@@ -9,6 +9,7 @@ interface MascotState {
     selector: 'app-mascot',
     imports: [],
     templateUrl: './mascot.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './mascot.scss',
 })
 export class Mascot {

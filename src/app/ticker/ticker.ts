@@ -7,6 +7,7 @@ import {
     effect,
     inject,
     signal,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { MarketData } from '../core/market-data';
 import { SYMBOL_LIST, digitsFor } from '../core/symbols';
@@ -29,6 +30,7 @@ const SYMBOL_LABEL = new Map(SYMBOL_LIST.map((s) => [s.code, s.label]));
     selector: 'app-ticker',
     imports: [DecimalPipe],
     templateUrl: './ticker.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './ticker.scss',
 })
 export class Ticker implements OnInit {

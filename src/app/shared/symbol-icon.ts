@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import { iconFor } from '../core/symbols';
 
 /** Small round badge representing a symbol (its "image"), reused in the rich
@@ -18,6 +18,7 @@ import { iconFor } from '../core/symbols';
             >
         }
     `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     styles: [
         `
             :host {

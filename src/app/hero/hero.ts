@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MarketData } from '../core/market-data';
 import { Mascot } from '../mascot/mascot';
 import { PriceQuote } from '../core/price-quote';
@@ -10,6 +10,7 @@ import { SymbolSelect } from '../shared/symbol-select';
     selector: 'app-hero',
     imports: [Mascot, DecimalPipe, SymbolSelect],
     templateUrl: './hero.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './hero.scss',
 })
 export class Hero implements OnInit {

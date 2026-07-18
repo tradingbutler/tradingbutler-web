@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 interface Stat {
     value: string;
@@ -16,6 +16,7 @@ const STATS: Stat[] = [
     selector: 'app-trust',
     imports: [],
     templateUrl: './trust.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './trust.scss',
 })
 export class Trust {

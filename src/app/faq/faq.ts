@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 interface QA {
     q: string;
@@ -37,6 +37,7 @@ const FAQS: QA[] = [
     selector: 'app-faq',
     imports: [],
     templateUrl: './faq.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './faq.scss',
 })
 export class Faq {

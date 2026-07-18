@@ -1,4 +1,11 @@
-import { Component, ElementRef, computed, inject, signal } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    computed,
+    inject,
+    signal,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { MarketData } from '../core/market-data';
 import { SYMBOL_LIST } from '../core/symbols';
 import { SymbolIcon } from './symbol-icon';
@@ -13,6 +20,7 @@ import { SymbolIcon } from './symbol-icon';
     imports: [SymbolIcon],
     templateUrl: './symbol-select.html',
     styleUrl: './symbol-select.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '(document:click)': 'onDocumentClick($event)',
         '(document:keydown.escape)': 'close()',

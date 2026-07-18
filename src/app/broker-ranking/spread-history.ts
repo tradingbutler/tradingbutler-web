@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Tiny line + area sparkline of a broker's recent spread. Drawn as inline SVG
@@ -16,6 +16,7 @@ import { Component, computed, input } from '@angular/core';
             </svg>
         }
     `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     styles: [
         `
             :host {
