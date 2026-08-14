@@ -1,0 +1,295 @@
+:host {
+    display: block;
+}
+
+/* ---- Breadcrumb ---- */
+
+.crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: var(--tb-text-faint);
+
+    a {
+        color: var(--tb-text-muted);
+        text-decoration: none;
+
+        &:hover {
+            color: var(--tb-accent);
+        }
+    }
+}
+
+.crumbs__current {
+    color: var(--tb-text);
+    font-weight: 600;
+}
+
+/* ---- Stage: the price plinth ---- */
+
+.sstage {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2.25rem 2.5rem;
+    border: 1px solid var(--tb-border-strong);
+    border-radius: var(--tb-radius);
+    background: var(--tb-surface);
+    box-shadow: var(--tb-shadow);
+    overflow: hidden;
+}
+
+.sstage__copy {
+    position: relative;
+    z-index: 1;
+}
+
+.sstage__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--tb-accent);
+}
+
+.sstage__live {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--tb-green);
+    box-shadow: 0 0 0 4px var(--tb-green-soft);
+}
+
+.sstage__title {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0.7rem 0 0;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 800;
+}
+
+.sstage__prices {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    max-width: 30rem;
+}
+
+.sstage__price {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--tb-border);
+    border-radius: var(--tb-radius-sm);
+    background: var(--tb-surface-2);
+}
+
+.sstage__price--spread {
+    border-color: var(--tb-accent);
+    background: var(--tb-accent-soft);
+}
+
+.sstage__price-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tb-text-faint);
+}
+
+.sstage__price-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.sstage__price--spread .sstage__price-value {
+    color: var(--tb-accent);
+}
+
+.sstage__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0 0;
+    font-size: 0.88rem;
+    color: var(--tb-text-muted);
+}
+
+.sstage__change--up {
+    color: var(--tb-green);
+}
+
+.sstage__change--down {
+    color: var(--tb-red);
+}
+
+.sstage__waiting {
+    margin: 1.4rem 0 0;
+    color: var(--tb-text-muted);
+}
+
+/* The plinth SVG fills this box (its `:host` is `position: absolute; inset: 0`)
+   and puts its pedestal cap at ~2/3 height, so a top-aligned mascot of roughly
+   that height lands his feet on it. */
+.sstage__figure {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 300px;
+}
+
+.sstage__figure app-mascot {
+    position: relative;
+    z-index: 1;
+}
+
+/* ---- Detail cards ---- */
+
+.sdetail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.sdetail__card {
+    padding: 1.5rem;
+    border: 1px solid var(--tb-border);
+    border-radius: var(--tb-radius);
+    background: var(--tb-surface);
+    box-shadow: var(--tb-shadow-sm);
+}
+
+.sdetail__title {
+    margin: 0 0 1rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tb-text-faint);
+}
+
+.sdetail__rank {
+    margin: 0;
+    font-size: 1.05rem;
+
+    strong {
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: var(--tb-accent);
+    }
+}
+
+.sdetail__note {
+    margin: 0.7rem 0 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--tb-text-muted);
+}
+
+.sdetail__note--empty {
+    color: var(--tb-text-faint);
+}
+
+.sdetail__cta {
+    display: inline-block;
+    margin-top: 1.25rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    background: var(--tb-accent);
+    color: var(--tb-accent-contrast);
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+        background: var(--tb-accent-hover);
+    }
+}
+
+/* ---- Sibling instruments ---- */
+
+.siblings__title {
+    margin: 0 0 1rem;
+    font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+    font-weight: 800;
+}
+
+.siblings__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    a {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--tb-border);
+        border-radius: var(--tb-radius-sm);
+        background: var(--tb-surface);
+        color: var(--tb-text);
+        text-decoration: none;
+
+        &:hover {
+            border-color: var(--tb-accent);
+        }
+    }
+}
+
+.siblings__label {
+    font-weight: 600;
+}
+
+.siblings__spread {
+    margin-left: auto;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--tb-accent);
+}
+
+.siblings__all {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--tb-text-muted);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+        color: var(--tb-accent);
+    }
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 860px) {
+    .sstage {
+        grid-template-columns: 1fr;
+        padding: 1.75rem 1.5rem;
+    }
+
+    .sdetail {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .sstage__prices {
+        grid-template-columns: 1fr;
+    }
+}

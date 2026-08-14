@@ -1,5 +1,14 @@
 export type AssetClass = 'Majors' | 'Metals' | 'Crypto' | 'Energy' | 'Indices' | 'Stocks';
 
+/**
+ * Asset class widened with a catch-all bucket. Brokers stream their own
+ * instrument names — Exness sends `BTCAUDm` alongside `EURUSD` — and those
+ * codes are absent from `SYMBOL_LIST`, so a per-broker view needs somewhere
+ * to put them. `AssetClass` itself is deliberately left alone so the
+ * home-page markets board keeps its fixed six groups.
+ */
+export type SymbolGroup = AssetClass | 'Other';
+
 /** Small round badge shown next to a symbol (its "image"). */
 export interface SymbolIcon {
     /** 1–3 character glyph/text drawn inside the badge. */
@@ -59,6 +68,51 @@ export const ASSET_CLASS_ORDER: AssetClass[] = [
     'Indices',
     'Stocks',
 ];
+
+/** Group order for per-broker views, with the catch-all bucket last. */
+export const SYMBOL_GROUP_ORDER: SymbolGroup[] = [...ASSET_CLASS_ORDER, 'Other'];
+
+const META_BY_CODE = new Map(SYMBOL_LIST.map((s) => [s.code, s]));
+
+/** Display label for a symbol code — the pretty `EUR/USD` form when we know
+ *  the instrument, otherwise the broker's own code verbatim (`BTCAUDm`).
+ *  Never invents a separator: guessing where to split an unknown code gets it
+ *  wrong more often than not. */
+export function labelFor(code: string): string {
+    return META_BY_CODE.get(code)?.label ?? code;
+}
+
+/** Asset class for a symbol code, or `'Other'` for broker-specific codes. */
+export function groupFor(code: string): SymbolGroup {
+    return META_BY_CODE.get(code)?.assetClass ?? 'Other';
+}
+
+/**
+ * Badge for a symbol code, falling back to a generated one for codes outside
+ * `SYMBOL_LIST`. The fallback is a pure function of the code — same input,
+ * same colours, on the server and in the browser — because anything random
+ * here would produce a hydration mismatch (see `Ticker`, which keeps its
+ * random sample `null` during SSR for the same reason).
+ */
+export function iconOrFallback(code: string): SymbolIcon {
+    const known = ICON_BY_CODE.get(code);
+    if (known) {
+        return known;
+    }
+    // FNV-1a over the code, reduced to a hue. Deterministic and well spread
+    // across the wheel for the short, similar strings symbol codes tend to be.
+    let hash = 0x811c9dc5;
+    for (let i = 0; i < code.length; i++) {
+        hash ^= code.charCodeAt(i);
+        hash = Math.imul(hash, 0x01000193);
+    }
+    const hue = Math.abs(hash) % 360;
+    return {
+        short: code.slice(0, 3).toUpperCase(),
+        bg: `linear-gradient(135deg, hsl(${hue} 42% 46%), hsl(${(hue + 24) % 360} 46% 30%))`,
+        fg: '#fff',
+    };
+}
 
 const DECIMALS = new Map(SYMBOL_LIST.map((s) => [s.code, s.decimals]));
 

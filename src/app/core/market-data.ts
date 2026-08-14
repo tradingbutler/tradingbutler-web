@@ -8,7 +8,14 @@ import { PriceQuote } from './price-quote';
 import { RateRecord, RatesSnapshot } from './rate-registry';
 import { RateTickMessage } from './rate-tick';
 import { RatesWs } from './rates-ws';
-import { ASSET_CLASS_ORDER, AssetClass, SYMBOL_LIST, SymbolMeta } from './symbols';
+import {
+    ASSET_CLASS_ORDER,
+    AssetClass,
+    SYMBOL_GROUP_ORDER,
+    SYMBOL_LIST,
+    SymbolMeta,
+    groupFor,
+} from './symbols';
 
 export interface MarketRow {
     symbol: SymbolMeta;
@@ -136,6 +143,19 @@ export class MarketData implements OnDestroy {
         }
         this.changePct.set(key, ((bid - firstBid) / firstBid) * 100);
 
+        // Roll the spread into this pair's sparkline history. Keyed
+        // `symbol:brokerId` to match `spreadHistory()`'s lookup — note that is
+        // the opposite order to `key` above, which is `brokerId:symbol`.
+        const historyKey = `${msg.symbol}:${msg.broker}`;
+        const spread = Math.max(0, msg.data.x.tick.a - bid);
+        const digits = msg.data.i?.[1];
+        const series = this.history.get(historyKey) ?? [];
+        series.push(digits === undefined ? spread : Number(spread.toFixed(digits)));
+        if (series.length > MarketData.HISTORY_LEN) {
+            series.splice(0, series.length - MarketData.HISTORY_LEN);
+        }
+        this.history.set(historyKey, series);
+
         const snapshot = this.ratesSnapshot();
         const next: RatesSnapshot = { ...snapshot };
         next[msg.broker] = { ...snapshot[msg.broker], [msg.symbol]: msg.data };
@@ -191,9 +211,81 @@ export class MarketData implements OnDestroy {
     /** All brokers for the selected symbol, tightest spread first. */
     readonly rankingForSelected = computed<PriceQuote[]>(() => {
         const symbol = this.selectedSymbol();
+        return this.rankingFor(symbol);
+    });
+
+    /** All brokers quoting `symbol`, tightest spread first. The id-parameterised
+     *  form of `rankingForSelected` — the per-broker pages need a ranking for
+     *  their own symbol without touching the app-wide `selectedSymbol` signal,
+     *  which every `SymbolSelect` on the home page is bound to. */
+    rankingFor(symbol: string): PriceQuote[] {
         const rows = Array.from(this.realQuotes().values()).filter((q) => q.symbol === symbol);
         return rows.sort((a, b) => a.spread - b.spread);
-    });
+    }
+
+    /**
+     * Every quote for one broker, ordered by asset-class group and then by
+     * symbol, so the per-broker table has a stable order across ticks.
+     *
+     * Reads the `realQuotes` signal, so calling this inside a `computed()`
+     * keeps the caller reactive to live ticks.
+     */
+    quotesForBroker(brokerId: string): PriceQuote[] {
+        return Array.from(this.realQuotes().values())
+            .filter((q) => q.broker_id === brokerId)
+            .sort((a, b) => {
+                const order =
+                    SYMBOL_GROUP_ORDER.indexOf(groupFor(a.symbol)) -
+                    SYMBOL_GROUP_ORDER.indexOf(groupFor(b.symbol));
+                return order !== 0 ? order : a.symbol.localeCompare(b.symbol);
+            });
+    }
+
+    /** One broker's quote for one symbol, or `undefined` if it doesn't quote it. */
+    quoteFor(brokerId: string, symbol: string): PriceQuote | undefined {
+        return this.realQuotes().get(`${symbol}:${brokerId}`);
+    }
+
+    /** Where a broker places on a symbol, e.g. `{ rank: 2, total: 5 }` for the
+     *  second-tightest spread of five brokers quoting it. */
+    rankFor(brokerId: string, symbol: string): { rank: number; total: number } | undefined {
+        const ranking = this.rankingFor(symbol);
+        const index = ranking.findIndex((q) => q.broker_id === brokerId);
+        return index === -1 ? undefined : { rank: index + 1, total: ranking.length };
+    }
+
+    /**
+     * Resolves a URL slug to a real broker id, case-insensitively — canonical
+     * URLs are lowercase (`/exness`) but a hand-typed `/Exness` should still
+     * land. Matches brokers that are registered *or* streaming, mirroring
+     * `brokerRates()`.
+     */
+    resolveBrokerSlug(slug: string): string | undefined {
+        const wanted = slug.toLowerCase();
+        for (const id of this.brokerRates().keys()) {
+            if (id.toLowerCase() === wanted) {
+                return id;
+            }
+        }
+        return undefined;
+    }
+
+    /** Resolves a URL slug to one of a broker's real symbol codes, e.g.
+     *  `'btcaudm'` -> `'BTCAUDm'`. Broker-native codes carry arbitrary casing,
+     *  so the URL form is always lowercase and matched case-insensitively. */
+    resolveSymbolSlug(brokerId: string, slug: string): string | undefined {
+        const wanted = slug.toLowerCase();
+        const rates = this.ratesSnapshot()[brokerId];
+        if (!rates) {
+            return undefined;
+        }
+        for (const code of Object.keys(rates)) {
+            if (code.toLowerCase() === wanted) {
+                return code;
+            }
+        }
+        return undefined;
+    }
 
     /** Every quote — one per broker+symbol. */
     readonly allQuotes = computed<PriceQuote[]>(() => Array.from(this.realQuotes().values()));

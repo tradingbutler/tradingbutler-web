@@ -1,8 +1,10 @@
 import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
-import { iconFor } from '../core/symbols';
+import { iconOrFallback } from '../core/symbols';
 
 /** Small round badge representing a symbol (its "image"), reused in the rich
- *  dropdowns and the markets tables. Pure presentational, hydration-safe. */
+ *  dropdowns and the markets tables. Pure presentational, hydration-safe —
+ *  including for broker-specific codes outside `SYMBOL_LIST`, which get a
+ *  deterministic generated badge rather than no badge at all. */
 @Component({
     selector: 'app-symbol-icon',
     imports: [],
@@ -48,5 +50,5 @@ import { iconFor } from '../core/symbols';
 })
 export class SymbolIcon {
     readonly code = input.required<string>();
-    protected readonly icon = computed(() => iconFor(this.code()));
+    protected readonly icon = computed(() => iconOrFallback(this.code()));
 }

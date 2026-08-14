@@ -80,6 +80,30 @@ a {
     color: inherit;
 }
 
+/* Shared page container. Global rather than component-scoped because every
+   routed page (home, broker, broker+symbol) is laid out in the same column. */
+.page {
+    max-width: var(--tb-maxw);
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+}
+
+@media (max-width: 760px) {
+    .page {
+        gap: 3rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .page {
+        padding: 0 1rem 3rem;
+        gap: 2.5rem;
+    }
+}
+
 /* Numeric cells share a consistent, tabular figure style */
 .tb-num {
     font-variant-numeric: tabular-nums;

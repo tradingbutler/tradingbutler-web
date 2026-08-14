@@ -1,3 +1,11 @@
 <div class="mascot" role="img" aria-label="The Trading Butler, your market comparison expert">
-    <img class="mascot__figure" [src]="state().image" alt="The Trading Butler" />
+    <img
+        class="mascot__figure"
+        [class.mascot__figure--compact]="size() === 'compact'"
+        [src]="image()"
+        alt="The Trading Butler"
+    />
+    @if (tip()) {
+        <p class="mascot__tip">{{ tip() }}</p>
+    }
 </div>

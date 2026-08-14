@@ -1,11 +1,15 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Seo } from '../core/seo';
 
 interface QA {
     q: string;
     a: string;
 }
 
-/** Keep in sync with the FAQPage JSON-LD in src/index.html. */
+/** Source of truth for both the rendered accordion and the FAQPage JSON-LD.
+ *  The structured data used to be hand-copied into `src/index.html`; it now
+ *  ships from here so it appears on the home page only — emitting it from
+ *  `index.html` would repeat it on every broker landing page. */
 const FAQS: QA[] = [
     {
         q: 'What is a spread in forex and CFD trading?',
@@ -40,6 +44,23 @@ const FAQS: QA[] = [
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './faq.scss',
 })
-export class Faq {
+export class Faq implements OnInit, OnDestroy {
+    private readonly seo = inject(Seo);
     protected readonly faqs = FAQS;
+
+    ngOnInit(): void {
+        this.seo.setJsonLd('ld-faq', {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: FAQS.map((faq) => ({
+                '@type': 'Question',
+                name: faq.q,
+                acceptedAnswer: { '@type': 'Answer', text: faq.a },
+            })),
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.seo.setJsonLd('ld-faq', null);
+    }
 }

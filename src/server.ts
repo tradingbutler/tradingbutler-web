@@ -98,14 +98,56 @@ app.use(
 );
 
 /**
+ * Is this a `/{broker}` or `/{broker}/{symbol}` URL naming something we don't
+ * have? The Angular app renders a not-found panel for those either way, but
+ * without this they'd answer 200 — a soft 404, which search engines treat as a
+ * thin duplicate of every other mistyped URL. Matched case-insensitively, the
+ * same way `MarketData.resolveBrokerSlug`/`resolveSymbolSlug` do client-side.
+ */
+function isUnknownPage(pathname: string, context: SSRRequestContext): boolean {
+    const segments = pathname.split('/').filter(Boolean);
+    if (segments.length === 0) {
+        return false; // home page
+    }
+    if (segments.length > 2) {
+        return true;
+    }
+    const [brokerSlug, symbolSlug] = segments;
+    const brokerId = Object.keys(context.brokers).find(
+        (id) => id.toLowerCase() === brokerSlug.toLowerCase(),
+    );
+    if (brokerId === undefined) {
+        return true;
+    }
+    if (symbolSlug === undefined) {
+        return false;
+    }
+    const symbols = Object.keys(context.rates[brokerId] ?? {});
+    return !symbols.some((code) => code.toLowerCase() === symbolSlug.toLowerCase());
+}
+
+/**
  * Handle all other requests by rendering the Angular application, preloaded
  * with the current brokers/rates snapshot so the first response already has
  * real data (see app.config.server.ts, which reads this via REQUEST_CONTEXT).
  */
 app.use((req, res, next) => {
     readSSRContext()
-        .then((requestContext) => angularApp.handle(req, requestContext))
-        .then((response) => (response ? writeResponseToNodeResponse(response, res) : next()))
+        .then(async (requestContext) => {
+            const response = await angularApp.handle(req, requestContext);
+            if (!response) {
+                return next();
+            }
+            const pathname = new URL(req.url, 'http://localhost').pathname;
+            const finalResponse = isUnknownPage(pathname, requestContext)
+                ? new Response(response.body, {
+                      status: 404,
+                      statusText: 'Not Found',
+                      headers: response.headers,
+                  })
+                : response;
+            return writeResponseToNodeResponse(finalResponse, res);
+        })
         .catch(next);
 });
 

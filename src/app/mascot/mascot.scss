@@ -15,6 +15,13 @@
     filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
 }
 
+/* Smaller, untransformed framing for the per-symbol page, where he shares the
+   stage with the price readout rather than anchoring the whole hero. */
+.mascot__figure--compact {
+    height: clamp(150px, 20vw, 200px);
+    transform: none;
+}
+
 .mascot__tip {
     position: relative;
     margin: 0;

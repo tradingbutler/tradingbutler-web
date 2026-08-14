@@ -1,34 +1,21 @@
-import { Meta, Title } from '@angular/platform-browser';
 import { isPlatformBrowser } from '@angular/common';
-import {
-    Component,
-    OnInit,
-    PLATFORM_ID,
-    inject,
-    signal,
-    ChangeDetectionStrategy,
-} from '@angular/core';
-import { BrokerRanking } from './broker-ranking/broker-ranking';
-import { Faq } from './faq/faq';
-import { FearGreed } from './fear-greed/fear-greed';
-import { Features } from './features/features';
+import { Component, PLATFORM_ID, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { Header } from './header/header';
-import { Hero } from './hero/hero';
-import { MarketClock } from './market-clock/market-clock';
-import { Markets } from './markets/markets';
-import { Ticker } from './ticker/ticker';
-import { Trust } from './trust/trust';
 
+/**
+ * The site shell: risk bar, header, routed page, footer. Page content and its
+ * title/description/canonical live in the routed components (`Home`,
+ * `BrokerPage`, `BrokerSymbolPage`) — see `core/seo.ts`.
+ */
 @Component({
     selector: 'app-root',
-    imports: [Header, Ticker, Hero, BrokerRanking, Trust, Features, MarketClock, FearGreed, Faq],
+    imports: [Header, RouterOutlet, RouterLink],
     templateUrl: './app.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './app.scss',
 })
-export class App implements OnInit {
-    private readonly title = inject(Title);
-    private readonly meta = inject(Meta);
+export class App {
     private readonly platformId = inject(PLATFORM_ID);
 
     /**
@@ -53,27 +40,5 @@ export class App implements OnInit {
         }
         event.preventDefault();
         window.location.href = `mailto:${address}`;
-    }
-
-    ngOnInit(): void {
-        this.title.setTitle('TradingButler — Compare Live Broker Spreads | Forex, Gold & Crypto');
-        this.meta.updateTag({
-            name: 'description',
-            content:
-                'Compare live forex, gold and crypto spreads across regulated brokers in real time. ' +
-                'See the tightest spread for EUR/USD, XAU/USD, BTC/USD and more, then open an account in one click.',
-        });
-        this.meta.updateTag({
-            property: 'og:title',
-            content: 'TradingButler — Compare Live Broker Spreads',
-        });
-        this.meta.updateTag({
-            property: 'og:description',
-            content: 'Live broker spread comparison for forex, gold, crypto, energy and indices.',
-        });
-        this.meta.updateTag({ property: 'og:type', content: 'website' });
-        this.meta.updateTag({ property: 'og:image', content: '/og-image.png' });
-        this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-        this.meta.updateTag({ name: 'twitter:image', content: '/og-image.png' });
     }
 }

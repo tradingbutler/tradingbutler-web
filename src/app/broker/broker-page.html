@@ -1,0 +1,215 @@
+@if (brokerId()) {
+    <main class="page">
+        <section class="bstage" aria-labelledby="bstage-title">
+            <app-broker-stage />
+
+            <div class="bstage__copy">
+                <span class="bstage__eyebrow">
+                    <span class="bstage__live" aria-hidden="true"></span>
+                    Live broker feed
+                </span>
+
+                <div class="bstage__plaque">
+                    @if (record()?.logo; as logo) {
+                        <img
+                            class="bstage__logo"
+                            [src]="logo"
+                            [alt]="name() + ' logo'"
+                            width="56"
+                            height="56"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                    }
+                    <h1 class="bstage__title" id="bstage-title">{{ name() }}</h1>
+                </div>
+
+                <p class="bstage__sub">
+                    Every instrument {{ name() }} streams, with live bid, ask and spread — straight
+                    from the broker's own feed, not an average.
+                </p>
+
+                @if (record()?.open_account_url; as url) {
+                    <a class="bstage__cta" [href]="url" target="_blank" rel="noopener sponsored">
+                        Open an account with {{ name() }}
+                    </a>
+                }
+            </div>
+
+            <div class="bstage__figure">
+                <app-mascot [tip]="name() + ', at your service.'" />
+            </div>
+        </section>
+
+        <section class="bstats" aria-label="Feed summary">
+            <div class="bstats__item">
+                <span class="bstats__label">Instruments streamed</span>
+                <span class="bstats__value tb-num">{{ quotes().length }}</span>
+            </div>
+            <div class="bstats__item">
+                <span class="bstats__label">Tightest spread</span>
+                @if (tightest(); as best) {
+                    <span class="bstats__value tb-num">
+                        {{ best.spread | number: digitsFor(best.symbol, best.digits) }}
+                        <span class="bstats__unit">{{ labelFor(best.symbol) }}</span>
+                    </span>
+                } @else {
+                    <span class="bstats__value bstats__value--muted">—</span>
+                }
+            </div>
+            <div class="bstats__item">
+                <span class="bstats__label">Last tick</span>
+                @if (lastTick(); as ts) {
+                    <span class="bstats__value tb-num"
+                        >{{ ts | date: 'HH:mm:ss' : 'UTC' }} UTC</span
+                    >
+                } @else {
+                    <span class="bstats__value bstats__value--muted">—</span>
+                }
+            </div>
+        </section>
+
+        <section class="btable" aria-labelledby="btable-title">
+            <header class="btable__head">
+                <span class="tb-eyebrow">Live prices</span>
+                <h2 class="btable__title" id="btable-title">{{ name() }}’s instruments, live</h2>
+                <p class="btable__sub">
+                    Prices update in real time as {{ name() }} quotes them. Pick an instrument for
+                    its own live page.
+                </p>
+            </header>
+
+            @if (groups().length === 0) {
+                <p class="btable__empty">Waiting for live prices from {{ name() }}…</p>
+            } @else {
+                @for (group of groups(); track group.group) {
+                    <div class="btable__card">
+                        <h3 class="btable__group">{{ group.group }}</h3>
+                        <div class="btable__wrap">
+                            <table class="btable__table tb-num">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="btable__col-sym">Instrument</th>
+                                        <th scope="col" class="btable__col-graph"></th>
+                                        <th scope="col" class="btable__col-num">Buy</th>
+                                        <th scope="col" class="btable__col-num">Sell</th>
+                                        <th scope="col" class="btable__col-num">Spread</th>
+                                        <th scope="col" class="btable__col-num">Change</th>
+                                        <th scope="col" class="btable__col-action"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (quote of group.rows; track quote.symbol) {
+                                        <tr>
+                                            <td class="btable__sym" data-label="Instrument">
+                                                <a
+                                                    class="btable__symlink"
+                                                    [routerLink]="rowLink(quote.symbol)"
+                                                >
+                                                    <app-symbol-icon [code]="quote.symbol" />
+                                                    <span class="btable__symtext">{{
+                                                        labelFor(quote.symbol)
+                                                    }}</span>
+                                                </a>
+                                            </td>
+                                            <td class="btable__col-graph" data-label="History">
+                                                <app-spread-history
+                                                    [data]="
+                                                        marketData.spreadHistory(
+                                                            quote.symbol,
+                                                            quote.broker_id
+                                                        )
+                                                    "
+                                                />
+                                            </td>
+                                            <td class="btable__col-num" data-label="Buy">
+                                                {{
+                                                    quote.ask
+                                                        | number
+                                                            : digitsFor(quote.symbol, quote.digits)
+                                                }}
+                                            </td>
+                                            <td class="btable__col-num" data-label="Sell">
+                                                {{
+                                                    quote.bid
+                                                        | number
+                                                            : digitsFor(quote.symbol, quote.digits)
+                                                }}
+                                            </td>
+                                            <td
+                                                class="btable__col-num btable__spread"
+                                                data-label="Spread"
+                                            >
+                                                {{
+                                                    quote.spread
+                                                        | number
+                                                            : digitsFor(quote.symbol, quote.digits)
+                                                }}
+                                            </td>
+                                            <td
+                                                class="btable__col-num"
+                                                data-label="Change"
+                                                [class.btable__change--up]="quote.change_pct > 0"
+                                                [class.btable__change--down]="quote.change_pct < 0"
+                                            >
+                                                <span aria-hidden="true">{{
+                                                    quote.change_pct > 0
+                                                        ? '▲'
+                                                        : quote.change_pct < 0
+                                                          ? '▼'
+                                                          : '▪'
+                                                }}</span>
+                                                {{ quote.change_pct >= 0 ? '+' : ''
+                                                }}{{ quote.change_pct | number: '1.2-2' }}%
+                                            </td>
+                                            <td class="btable__col-action">
+                                                <a
+                                                    class="btable__more"
+                                                    [routerLink]="rowLink(quote.symbol)"
+                                                    [attr.aria-label]="
+                                                        'Live ' +
+                                                        labelFor(quote.symbol) +
+                                                        ' page for ' +
+                                                        name()
+                                                    "
+                                                    >Details →</a
+                                                >
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            }
+        </section>
+
+        <section class="bcompare">
+            <div class="bcompare__inner">
+                <h2 class="bcompare__title">How does {{ name() }} compare?</h2>
+                <p class="bcompare__sub">
+                    @if (otherBrokers() > 0) {
+                        See {{ name() }} ranked against the other {{ otherBrokers() }} broker{{
+                            otherBrokers() === 1 ? '' : 's'
+                        }}
+                        we track, instrument by instrument.
+                    } @else {
+                        See the full live spread ranking across every instrument we track.
+                    }
+                </p>
+                <a class="bcompare__btn" routerLink="/" fragment="compare">
+                    Compare every broker →
+                </a>
+            </div>
+        </section>
+    </main>
+} @else {
+    <main class="page">
+        <app-not-found-panel
+            title="I’m afraid I don’t serve that broker."
+            sub="No broker matches that address. These are the ones currently on the floor."
+            [links]="notFoundLinks()"
+        />
+    </main>
+}

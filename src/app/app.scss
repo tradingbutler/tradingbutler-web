@@ -27,75 +27,6 @@
     }
 }
 
-.page {
-    max-width: var(--tb-maxw);
-    margin: 0 auto;
-    padding: 0 1.5rem 4rem;
-    display: flex;
-    flex-direction: column;
-    gap: 4rem;
-}
-
-/* Final call-to-action band */
-.final-cta {
-    border: 1px solid var(--tb-border-strong);
-    border-radius: var(--tb-radius);
-    background:
-        radial-gradient(120% 140% at 50% -20%, var(--tb-accent-soft), transparent 60%),
-        var(--tb-surface);
-    box-shadow: var(--tb-shadow);
-}
-
-.final-cta__inner {
-    padding: 3.25rem 1.5rem;
-    text-align: center;
-}
-
-.final-cta__title {
-    margin: 0;
-    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-    font-weight: 800;
-}
-
-.final-cta__sub {
-    margin: 0.75rem auto 1.75rem;
-    max-width: 48ch;
-    color: var(--tb-text-muted);
-}
-
-.final-cta__btn {
-    display: inline-block;
-    padding: 0.85rem 1.8rem;
-    border-radius: 999px;
-    background: var(--tb-accent);
-    color: var(--tb-accent-contrast);
-    font-weight: 700;
-    font-size: 1rem;
-    text-decoration: none;
-    transition:
-        background 0.15s ease,
-        transform 0.15s ease;
-
-    &:hover {
-        background: var(--tb-accent-hover);
-        transform: translateY(-1px);
-    }
-}
-
-/* Two sentiment gauges side by side */
-.sentiment-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: stretch;
-    gap: 1.25rem;
-}
-
-@media (max-width: 900px) {
-    .sentiment-row {
-        grid-template-columns: 1fr;
-    }
-}
-
 /* Footer */
 .page-footer {
     border-top: 1px solid var(--tb-border);
@@ -193,10 +124,6 @@
 }
 
 @media (max-width: 760px) {
-    .page {
-        gap: 3rem;
-    }
-
     .page-footer__top {
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
@@ -204,15 +131,6 @@
 }
 
 @media (max-width: 520px) {
-    .page {
-        padding: 0 1rem 3rem;
-        gap: 2.5rem;
-    }
-
-    .final-cta__inner {
-        padding: 2.5rem 1.25rem;
-    }
-
     .page-footer__inner {
         padding: 2.5rem 1rem 2rem;
     }

@@ -1,0 +1,30 @@
+<app-ticker />
+
+<main class="page">
+    <app-hero />
+    <app-broker-ranking />
+    <app-trust />
+    <app-features />
+    <!-- <app-markets /> -->
+    <app-market-clock />
+    <div class="sentiment-row">
+        <app-fear-greed />
+        <app-fear-greed
+            variant="stocks"
+            title="Stocks Fear &amp; Greed"
+            sub="A live 0–100 read on US stock-market sentiment — built from volatility, momentum, options demand and safe-haven flows. Fear can flag value; greed can flag froth."
+        />
+    </div>
+    <app-faq />
+
+    <section class="final-cta" aria-label="Get started">
+        <div class="final-cta__inner">
+            <h2 class="final-cta__title">Open your account with the tightest spread</h2>
+            <p class="final-cta__sub">
+                Compare {{ '' }}live spreads in seconds and start trading with a top-rated,
+                regulated broker.
+            </p>
+            <a class="final-cta__btn" href="#compare">Compare brokers &amp; open account</a>
+        </div>
+    </section>
+</main>

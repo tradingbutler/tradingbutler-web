@@ -1,0 +1,154 @@
+@if (brokerId() && symbolCode()) {
+    <main class="page">
+        <nav class="crumbs" aria-label="Breadcrumb">
+            <a routerLink="/">TradingButler</a>
+            <span aria-hidden="true">/</span>
+            <a [routerLink]="['/', slug()]">{{ name() }}</a>
+            <span aria-hidden="true">/</span>
+            <span class="crumbs__current">{{ label() }}</span>
+        </nav>
+
+        <section class="sstage" aria-labelledby="sstage-title">
+            <div class="sstage__copy">
+                <span class="sstage__eyebrow">
+                    <span class="sstage__live" aria-hidden="true"></span>
+                    {{ name() }} · live
+                </span>
+
+                <h1 class="sstage__title" id="sstage-title">
+                    <app-symbol-icon [code]="symbolCode()!" />
+                    <span>{{ label() }}</span>
+                </h1>
+
+                @if (quote(); as q) {
+                    <div class="sstage__prices">
+                        <div class="sstage__price">
+                            <span class="sstage__price-label">Buy</span>
+                            <span class="sstage__price-value tb-num">{{
+                                q.ask | number: digitsFor(q.symbol, q.digits)
+                            }}</span>
+                        </div>
+                        <div class="sstage__price">
+                            <span class="sstage__price-label">Sell</span>
+                            <span class="sstage__price-value tb-num">{{
+                                q.bid | number: digitsFor(q.symbol, q.digits)
+                            }}</span>
+                        </div>
+                        <div class="sstage__price sstage__price--spread">
+                            <span class="sstage__price-label">Spread</span>
+                            <span class="sstage__price-value tb-num">{{
+                                q.spread | number: digitsFor(q.symbol, q.digits)
+                            }}</span>
+                        </div>
+                    </div>
+
+                    <p class="sstage__meta tb-num">
+                        <span
+                            class="sstage__change"
+                            [class.sstage__change--up]="q.change_pct > 0"
+                            [class.sstage__change--down]="q.change_pct < 0"
+                        >
+                            <span aria-hidden="true">{{
+                                q.change_pct > 0 ? '▲' : q.change_pct < 0 ? '▼' : '▪'
+                            }}</span>
+                            {{ q.change_pct >= 0 ? '+' : '' }}{{ q.change_pct | number: '1.2-2' }}%
+                        </span>
+                        <span class="sstage__ts">
+                            Last tick {{ q.ts | date: 'HH:mm:ss' : 'UTC' }} UTC
+                        </span>
+                    </p>
+                } @else {
+                    <p class="sstage__waiting">
+                        Waiting for {{ name() }}’s first {{ label() }} tick…
+                    </p>
+                }
+            </div>
+
+            <!-- The plinth is scoped to this column so he stands *on* it,
+                 rather than floating loose behind the whole card. -->
+            <div class="sstage__figure">
+                <app-symbol-plinth />
+                <app-mascot image="mascot/butler-hero.png" size="compact" />
+            </div>
+        </section>
+
+        <section class="sdetail">
+            <div class="sdetail__card">
+                <h2 class="sdetail__title">Spread, recent history</h2>
+                @if (history().length > 1) {
+                    <app-spread-history [data]="history()" />
+                    <p class="sdetail__note">
+                        Rolling spread for {{ label() }} at {{ name() }}, sampled from the live feed
+                        for as long as this page has been open.
+                    </p>
+                } @else {
+                    <p class="sdetail__note sdetail__note--empty">
+                        Collecting ticks — the spread history builds up while this page stays open.
+                    </p>
+                }
+            </div>
+
+            <div class="sdetail__card">
+                <h2 class="sdetail__title">How {{ name() }} ranks</h2>
+                @if (standing(); as s) {
+                    @if (s.total > 1) {
+                        <p class="sdetail__rank">
+                            <strong class="tb-num">#{{ s.rank }}</strong>
+                            of {{ s.total }} brokers on {{ label() }}
+                        </p>
+                        <p class="sdetail__note">
+                            Ranked by live spread, tightest first — recalculated on every tick.
+                        </p>
+                    } @else {
+                        <p class="sdetail__note">
+                            {{ name() }} is the only broker currently streaming {{ label() }}, so
+                            there's nothing to rank it against yet.
+                        </p>
+                    }
+                } @else {
+                    <p class="sdetail__note sdetail__note--empty">Waiting for live prices…</p>
+                }
+
+                @if (record()?.open_account_url; as url) {
+                    <a class="sdetail__cta" [href]="url" target="_blank" rel="noopener sponsored">
+                        Trade {{ label() }} with {{ name() }}
+                    </a>
+                }
+            </div>
+        </section>
+
+        @if (siblings().length > 0) {
+            <section class="siblings" aria-labelledby="siblings-title">
+                <h2 class="siblings__title" id="siblings-title">More from {{ name() }}</h2>
+                <ul class="siblings__list">
+                    @for (sib of siblings(); track sib.symbol) {
+                        <li>
+                            <a [routerLink]="siblingLink(sib.symbol)">
+                                <app-symbol-icon [code]="sib.symbol" />
+                                <span class="siblings__label">{{ labelFor(sib.symbol) }}</span>
+                                <span class="siblings__spread tb-num">{{
+                                    sib.spread | number: digitsFor(sib.symbol, sib.digits)
+                                }}</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <a class="siblings__all" [routerLink]="['/', slug()]">
+                    All {{ name() }} instruments →
+                </a>
+            </section>
+        }
+    </main>
+} @else {
+    <main class="page">
+        <app-not-found-panel
+            [title]="
+                brokerId()
+                    ? 'I’m afraid ' + name() + ' doesn’t quote that instrument.'
+                    : 'I’m afraid I don’t serve that broker.'
+            "
+            sub="Here's what is available instead."
+            [links]="notFoundLinks()"
+        />
+    </main>
+}

@@ -6,6 +6,8 @@ import {
     withNoIncrementalHydration,
 } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
+import { routes } from './app.routes';
 import { BrokerRecord } from './core/broker-registry';
 import { INITIAL_BROKERS, INITIAL_RATES } from './core/initial-data';
 import { RatesSnapshot } from './core/rate-registry';
@@ -20,6 +22,17 @@ export const appConfig: ApplicationConfig = {
         provideBrowserGlobalErrorListeners(),
         provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
         provideHttpClient(withFetch()),
+        // `withComponentInputBinding()` binds :broker/:symbol straight to the
+        // page components' `input()`s; `anchorScrolling` keeps the header's
+        // "/#compare" links working when they're followed from a broker page.
+        provideRouter(
+            routes,
+            withComponentInputBinding(),
+            withInMemoryScrolling({
+                anchorScrolling: 'enabled',
+                scrollPositionRestoration: 'enabled',
+            }),
+        ),
         {
             provide: RATES_ENDPOINT,
             useFactory: () => {
