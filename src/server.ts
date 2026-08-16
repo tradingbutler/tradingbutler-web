@@ -11,6 +11,8 @@ import { join } from 'node:path';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { SSRRequestContext } from './app/core/initial-data';
 
+import { version } from '../package.json';
+
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
@@ -65,6 +67,10 @@ async function readSSRContext(): Promise<SSRRequestContext> {
     return { brokers, rates };
 }
 
+app.get('/version', (_req, res) => {
+    res.json({ version });
+});
+
 /**
  * Serve the live brokers/rates snapshots the browser polls for and that SSR
  * below preloads into the initial render. Registered ahead of the static
@@ -78,6 +84,7 @@ app.get('/brokers.json', (_req, res, next) => {
         )
         .catch(next);
 });
+
 app.get('/rates.json', (_req, res, next) => {
     readJsonSnapshot(ratesJsonPath, undefined)
         .then((data) =>
