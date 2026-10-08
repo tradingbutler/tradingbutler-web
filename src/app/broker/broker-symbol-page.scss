@@ -209,13 +209,13 @@
     margin-top: 1.25rem;
     padding: 0.7rem 1.4rem;
     border-radius: 999px;
-    background: var(--tb-accent);
+    background: var(--tb-accent-fill);
     color: var(--tb-accent-contrast);
     font-weight: 700;
     text-decoration: none;
 
     &:hover {
-        background: var(--tb-accent-hover);
+        background: var(--tb-accent-fill-hover);
     }
 }
 

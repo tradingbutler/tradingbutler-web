@@ -27,7 +27,9 @@ describe('SymbolSelect', () => {
         await fixture.whenStable();
     });
 
-    it('renders the selected symbol in the trigger', () => {
+    it('renders the selected symbol in the trigger', async () => {
+        TestBed.inject(MarketData).selectedSymbol.set('EURUSD');
+        await fixture.whenStable();
         const label = fixture.nativeElement.querySelector('.ssel__label');
         expect(label?.textContent?.trim()).toBe('EUR/USD');
     });

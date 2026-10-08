@@ -33,7 +33,7 @@
     display: inline-block;
     padding: 0.85rem 1.8rem;
     border-radius: 999px;
-    background: var(--tb-accent);
+    background: var(--tb-accent-fill);
     color: var(--tb-accent-contrast);
     font-weight: 700;
     font-size: 1rem;
@@ -43,7 +43,7 @@
         transform 0.15s ease;
 
     &:hover {
-        background: var(--tb-accent-hover);
+        background: var(--tb-accent-fill-hover);
         transform: translateY(-1px);
     }
 }

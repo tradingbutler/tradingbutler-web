@@ -79,7 +79,7 @@
     margin-top: 1.5rem;
     padding: 0.8rem 1.6rem;
     border-radius: 999px;
-    background: var(--tb-accent);
+    background: var(--tb-accent-fill);
     color: var(--tb-accent-contrast);
     font-weight: 700;
     text-decoration: none;
@@ -88,7 +88,7 @@
         transform 0.15s ease;
 
     &:hover {
-        background: var(--tb-accent-hover);
+        background: var(--tb-accent-fill-hover);
         transform: translateY(-1px);
     }
 }
@@ -310,7 +310,7 @@
     text-decoration: none;
 
     &:hover {
-        background: var(--tb-accent);
+        background: var(--tb-accent-fill);
         color: var(--tb-accent-contrast);
     }
 }

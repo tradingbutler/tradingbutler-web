@@ -186,7 +186,7 @@
 }
 
 .hero-rank__row--top {
-    border-color: rgba(224, 169, 59, 0.45);
+    border-color: rgba(255, 98, 54, 0.45);
     background: linear-gradient(180deg, var(--tb-accent-soft), var(--tb-surface-2));
 }
 
@@ -204,7 +204,7 @@
 }
 
 .hero-rank__pos--top {
-    background: var(--tb-accent);
+    background: var(--tb-accent-fill);
     color: var(--tb-accent-contrast);
 }
 
@@ -232,7 +232,7 @@
     flex-shrink: 0;
     padding: 0.1rem 0.45rem;
     border-radius: 999px;
-    background: var(--tb-accent);
+    background: var(--tb-accent-fill);
     color: var(--tb-accent-contrast);
     font-size: 0.62rem;
     font-weight: 800;
@@ -268,7 +268,7 @@
 .hero-rank__cta {
     padding: 0.5rem 0.9rem;
     border-radius: 999px;
-    background: var(--tb-accent);
+    background: var(--tb-accent-fill);
     color: var(--tb-accent-contrast);
     font-weight: 700;
     font-size: 0.84rem;
@@ -279,7 +279,7 @@
         transform 0.15s ease;
 
     &:hover {
-        background: var(--tb-accent-hover);
+        background: var(--tb-accent-fill-hover);
         transform: translateY(-1px);
     }
 }
@@ -306,7 +306,7 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: radial-gradient(closest-side, rgba(224, 169, 59, 0.16), transparent 70%);
+        background: radial-gradient(closest-side, rgba(255, 98, 54, 0.16), transparent 70%);
         filter: blur(8px);
         z-index: 0;
     }
