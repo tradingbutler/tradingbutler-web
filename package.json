@@ -1,6 +1,6 @@
 {
     "name": "web",
-    "version": "0.0.41",
+    "version": "0.0.42",
     "packageManager": "bun@1.4.2",
     "engines": {
         "bun": ">=1.3.0",
